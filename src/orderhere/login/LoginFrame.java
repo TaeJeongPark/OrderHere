@@ -1,4 +1,4 @@
-package login;
+package orderhere.login;
 
 import java.awt.BorderLayout;
 
@@ -11,6 +11,7 @@ public class LoginFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocation(300, 50);
         setSize(1050, 750);
+        setResizable(false);
         setLayout(new BorderLayout());
 
         setVisible(true);
