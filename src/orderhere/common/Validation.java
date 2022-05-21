@@ -19,4 +19,9 @@ public class Validation {
 		return Pattern.matches("^[0-9]{10,11}$", str);
 	}
 	
+	//인증번호 유효성 검사 : 숫자 6자리
+	public static boolean certifiNumValidation(String str) {
+		return Pattern.matches("^[0-9]{6,6}$", str);
+	}
+	
 }

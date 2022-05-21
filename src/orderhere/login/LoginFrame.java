@@ -282,7 +282,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 						
 						
 					} catch (SQLException e1) {
-						System.out.println("예외발생 : 일치하는 회원 정보가 없습니다.");
+						System.out.println("예외발생 : DB 조회에 실패했습니다.");
 						errorHandling();
 						e1.printStackTrace();
 					}
@@ -373,11 +373,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		if(obj == btnLblJoin) {	//회원가입 라벨버튼 클릭시
 			btnLblJoin.setForeground(Color.BLACK);
 			
-			if(jf == null) {	//회원가입 객체 생성여부 확인
-				jf = new JoinFrame("Join", this);		//회원가입 화면 생성	
-			} else {
-				jf.setVisible(true);	//회원가입 화면 노출
-			}
+			jf = new JoinFrame("Join", this);		//회원가입 화면 생성	
 			
 			setVisible(false);
 		} else if(obj == btnLblFind) {	//아이디/비밀번호 찾기 라벨버튼 클릭시

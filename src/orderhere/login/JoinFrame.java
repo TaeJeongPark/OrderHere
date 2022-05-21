@@ -12,10 +12,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -46,7 +50,7 @@ import orderhere.common.Validation;
 * 2022.05.21		TaeJeong Park		최초 생성
 * 2022.05.21		TaeJeong Park		레이아웃 구현 완료
 */
-public class JoinFrame extends JFrame implements ActionListener, FocusListener, KeyListener {
+public class JoinFrame extends JFrame implements ActionListener, FocusListener, KeyListener, ItemListener, Runnable {
 	
 	private String usersInId;		//사용자에게 입력 받은 아이디
 	private String usersInPw;		//사용자에게 입력 받은 비밀번호
@@ -54,26 +58,32 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 	private String usersInBirthday; //사용자에게 입력 받은 생년월일
 	private int usersInPhoneNum; 	//사용자에게 입력 받은 휴대폰번호
 	
-	private LoginFrame lf;
-	private JPanel pnBackground;
-	private JTextField tfId;
-	private JButton btnOverlapChk;
-	private JPasswordField tfPw;
-	private JPasswordField tfPw2;
-	private JTextField tfName;
-	private JComboBox<Integer> cbYear;
+	private LoginFrame lf;					//로그인 프레임 객체
+	private JPanel pnBackground;			//백그라운드 패널
+	private JTextField tfId;				//아이디 입력 텍스트필드
+	private JButton btnOverlapChk;			//중복확인 버튼
+	private JPasswordField tfPw;			//비밀번호 입력 텍스트필드
+	private JPasswordField tfPw2;			//비밀번호 확인 입력 텍스트필드
+	private JTextField tfName;				//이름 입력 텍스트필드
+	private JComboBox<Integer> cbYear;		//생년 콤보박스
 	private Integer[] yearList = {2003, 2002, 2001, 2000, 1999, 1998, 1997, 1996, 1995, 1994, 1993, 1992, 1991, 1990, 1989, 1988, 1987, 1986, 1985, 1984, 1983, 1982, 1981, 1980, 1979, 1978, 1977, 1976, 1975, 1974, 1973, 1972, 1971, 1970, 1969, 1968, 1967, 1966, 1965, 1964, 1963, 1962, 1961, 1960, 1959, 1958, 1957, 1956, 1955, 1954, 1953, 1952, 1951, 1950, 1949, 1948, 1947, 1946, 1945, 1944, 1943, 1942, 1941, 1940, 1939, 1938, 1937, 1936, 1935, 1934, 1933, 1932, 1931, 1930, 1929, 1928, 1927, 1926, 1925, 1924, 1923, 1922, 1921, 1920, 1919, 1918, 1917, 1916, 1915, 1914, 1913, 1912, 1911, 1910, 1909, 1908, 1907, 1906, 1905, 1904, 1903};
-	private JComboBox<Integer> cbMonth;
+	private JComboBox<Integer> cbMonth;		//생월 콤보박스
 	private Integer[] monthList = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-	private JComboBox<Integer> cbDay;
+	private JComboBox<Integer> cbDay;		//생일 콤보박스
 	private Integer[] dayList = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
-	private JTextField tfPhonNum;
-	private AbstractButton btnSend;
-	private JTextField tfCertifiNum;
-	private JButton btnCancel;
-	private JButton btnOk;
-	private JLabel lblCount;
-	private boolean overlapFlag = false;
+	private JTextField tfPhonNum;			//휴대폰번호 입력 텍스트필드
+	private AbstractButton btnSend;			//전송 버튼
+	private JTextField tfCertifiNum;		//인증번호 입력 텍스트필드
+	private JButton btnCancel;				//취소 버튼
+	private JButton btnOk;					//확인 버튼
+	private JLabel lblCount;				//인증시간 카운트 라벨
+	private boolean overlapFlag = false;	//중복확인 완료여부 저장
+	private int sendCertifiFlag = 1;		//전송하기 버튼이면 1, 인증하기 버튼이면 2
+	private int certifiNum;					//인증번호
+	private boolean certifiFlag = false;	//인증 성공여부 저장
+	private int min = 3;					//인증시간 분
+	private int sec = 0;					//인증시간 초
+	private Thread countThread = null;		//인증시간 카운트 Thread
 	
 	//로그인 프레임
 	public JoinFrame(String title, LoginFrame lf) {
@@ -97,7 +107,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		pnBackground.setBorder(BorderFactory.createEmptyBorder(100, 0, 50, 0));
 		pnBackground.setBackground(new Color(1, 168, 98));
 		
-		lf = this.lf;
+		this.lf = lf;
         
         makeTitle();	//타이틀 영역 생성
         makeInput();	//인풋필드 영역 생성
@@ -224,16 +234,19 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		cbYear = new JComboBox<Integer>(yearList);
 		cbYear.setPreferredSize(new Dimension(108, 48));	//콤보박스 크기 설정
 		cbYear.setFont(new Font("맑은고딕", Font.PLAIN, cbYear.getFont().getSize()));	//콤보박스 폰트 설정
+		cbYear.addItemListener(this);
 		
 		//생월 콤보박스 생성
 		cbMonth = new JComboBox<Integer>(monthList);
 		cbMonth.setPreferredSize(new Dimension(108, 48));	//콤보박스 크기 설정
 		cbMonth.setFont(new Font("맑은고딕", Font.PLAIN, cbMonth.getFont().getSize()));	//콤보박스 폰트 설정
+		cbMonth.addItemListener(this);
 		
 		//생일 콤보박스 생성
 		cbDay = new JComboBox<Integer>(dayList);
 		cbDay.setPreferredSize(new Dimension(108, 48));	//콤보박스 크기 설정
 		cbDay.setFont(new Font("맑은고딕", Font.PLAIN, cbDay.getFont().getSize()));	//콤보박스 폰트 설정
+		cbDay.addItemListener(this);
 		
 		
 		//휴대폰번호 필드
@@ -242,7 +255,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		pnPhonNumInput.setBackground(new Color(1, 168, 98));	//패널 색상 배경생과 동일하게 설정
 		
 		//휴대폰번호 텍스트필드 생성
-		tfPhonNum = new JTextField("  휴대폰번호");
+		tfPhonNum = new JTextField("  휴대폰번호('-'제외)");
 		tfPhonNum.setPreferredSize(new Dimension(324, 48));	//텍스트필드 크기 설정
 		tfPhonNum.setFont(new Font("맑은고딕", Font.PLAIN, tfId.getFont().getSize()));	//텍스트필드 폰트 설정
 		tfPhonNum.setForeground(Color.GRAY);	//텍스트필드 폰트 생상 설정
@@ -279,8 +292,10 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		lblCount = new JLabel();
 		lblCount.setPreferredSize(new Dimension(90, 48));	//라벨 크기 설정
 		lblCount.setFont(new Font("맑은고딕", Font.PLAIN, tfId.getFont().getSize()));	//라벨 폰트 설정
-		lblCount.setForeground(Color.RED);	//텍스트필드 폰트 생상 설정
-		lblCount.setHorizontalAlignment(JLabel.CENTER);	//텍스트필드 가운데 정렬
+		lblCount.setForeground(Color.RED);	//라벨 폰트 생상 설정
+		lblCount.setHorizontalAlignment(JLabel.CENTER);	//라벨 가운데 정렬
+		lblCount.setOpaque(true);	//라벨 투명도 설정
+		lblCount.setBackground(Color.WHITE);	//라벨 색상 하얀색으로 설정
 		
 		
 		//취소, 확인 버튼
@@ -341,8 +356,68 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		pnBackground.add(pnInputBackground, BorderLayout.CENTER);
 		
 		
-		String salt = Encryption.Salt();
+//		String salt = Encryption.Salt();
 		
+	}
+	
+	//숫자 6자리 인증번호 생성
+	public static int certificationNum() {
+        return ThreadLocalRandom.current().nextInt(100000, 1000000);
+    }
+	
+	//인증시간
+	public String getCount() {
+		
+		if(min == 0 && sec == 0) {
+			//전송하기 버튼으로 변경
+			sendCertifiFlag = 1;
+			btnSend.setIcon(new ImageIcon("images/join/Btn_Send_EnabledTrue.png"));
+			btnSend.setRolloverIcon(new ImageIcon("images/join/Btn_Send_Rollover.png"));
+			btnSend.setPressedIcon(new ImageIcon("images/join/Btn_Send_Pressed.png"));
+			btnSend.setEnabled(false);	//전송하기 버튼 비활성화
+			
+			//인증번호 만료 처리
+			certifiNum = 0;
+			
+			//휴대폰번호, 인증번호 텍스트필드 초기화
+			tfPhonNum.setEnabled(true);
+			tfPhonNum.setText("  휴대폰번호('-'제외)");
+			tfPhonNum.setForeground(Color.GRAY);
+			
+			tfCertifiNum.setText("  인증번호");
+			tfCertifiNum.setForeground(Color.GRAY);
+		}
+		
+		if(sec == 0) {
+			sec = 59;
+			min = min - 1;
+		} else {
+			sec--;
+		}
+		
+		String time = "0" + min;
+		
+		if(sec < 10) time = time + ":0" + sec;
+		else time = time + ":" + sec;
+		
+		return time;
+	}
+	
+	//인증시간 카운트 Thread
+	@Override
+	public void run() {
+		while(true) {
+			try {
+				Thread.sleep(1000);
+				String time = getCount();
+				
+				if(min >= 0) lblCount.setText(time);
+				else lblCount.setText("");
+			} catch (InterruptedException e) {
+				System.out.println("예외발생 : Thread가 종료되지 않았습니다.");
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -362,11 +437,11 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 				try {
 					if(rs.next()) {
 						System.out.println("아이디 중복");
-						JOptionPane.showMessageDialog(null, "이미 사용중인 아이디입니다.\n다시 시도해주세요.", "아이디 중복", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(this, "이미 사용중인 아이디입니다.\n다시 시도해주세요.", "아이디 중복", JOptionPane.ERROR_MESSAGE);
 					} else {
 						System.out.println("아이디 사용가능");
 						
-						int result = JOptionPane.showConfirmDialog(null, "사용 가능한 아이디입니다.\n" + usersInId + "로 사용하시겠습니까?", "아이디 사용 가능", JOptionPane.YES_NO_OPTION);
+						int result = JOptionPane.showConfirmDialog(this, "사용 가능한 아이디입니다.\n" + usersInId + "로 사용하시겠습니까?", "아이디 사용 가능", JOptionPane.YES_NO_OPTION);
 						
 						if(result == JOptionPane.YES_OPTION) {
 							tfId.setEnabled(false);	//아이디 텍스트필드 비활성화
@@ -379,14 +454,70 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 						}
 					}
 				} catch (SQLException e1) {
-					System.out.println("예외발생 : 일치하는 회원 정보가 없습니다.");
+					System.out.println("예외발생 : DB 조회에 실패했습니다.");
 					e1.printStackTrace();
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, "사용할 수 없는 아이디입니다.\n아이디는 영문, 숫자 조합의 5자리 이상 12자리 이하로 사용 가능하며,\n첫 자리에 숫자를 사용할 수 없습니다.\n다시 시도해주세요.", "규칙 위배", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "사용할 수 없는 아이디입니다.\n아이디는 영문, 숫자 조합의 5자리 이상 12자리 이하로 사용 가능하며,\n첫 자리에 숫자를 사용할 수 없습니다.\n다시 시도해주세요.", "규칙 위배", JOptionPane.ERROR_MESSAGE);
 			}
-		} else if(obj == btnSend) {
+		} else if(obj == btnSend && sendCertifiFlag == 1 && Validation.phonNumValidation(tfPhonNum.getText())) {
+			tfPhonNum.setEnabled(false);	//휴대폰번호 텍스트필드 비활성화
 			
+			System.out.println("인증번호 발송");
+			
+			certifiNum = certificationNum();	//6자리 숫자 난수 생성
+			JOptionPane.showMessageDialog(this, "인증번호는 [" + certifiNum + "]입니다.", tfPhonNum.getText() + " 문자", JOptionPane.PLAIN_MESSAGE);
+			
+			//인증하기 버튼으로 변경
+			sendCertifiFlag = 2;
+			btnSend.setIcon(new ImageIcon("images/join/Btn_Certified_EnabledTrue.png"));
+			btnSend.setRolloverIcon(new ImageIcon("images/join/Btn_Certified_Rollover.png"));
+			btnSend.setPressedIcon(new ImageIcon("images/join/Btn_Certified_Pressed.png"));
+			btnSend.setEnabled(false);	//인증하기 버튼 비활성화
+			
+			//인증시간 카운트
+			min = 3;
+			sec = 0;
+			if(countThread == null) {
+				countThread = new Thread(this);
+				countThread.start();
+			}
+		} else if(obj == btnSend && sendCertifiFlag == 2 && Validation.certifiNumValidation(tfCertifiNum.getText())) {
+			System.out.println("인증번호 일치여부 검사");
+			
+			if(certifiNum == Integer.parseInt(tfCertifiNum.getText())) {
+				System.out.println("인증성공");
+				
+				JOptionPane.showMessageDialog(this, "인증에 성공했습니다.", "인증 성공", JOptionPane.PLAIN_MESSAGE);
+				
+				min = -1;
+				
+				tfCertifiNum.setEnabled(false);	//인증번호 텍스트필드 비활성화
+				btnSend.setEnabled(false);		//인증하기 버튼 비활성화
+				
+				certifiFlag  = true;
+			} else {
+				JOptionPane.showMessageDialog(this, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
+				
+				min = -1;
+				
+				tfPhonNum.setEnabled(true);
+				tfPhonNum.setText("  휴대폰번호('-'제외)");
+				tfPhonNum.setForeground(Color.GRAY);
+				
+				tfCertifiNum.setText("  인증번호");
+				tfCertifiNum.setForeground(Color.GRAY);
+				
+				//전송하기 버튼으로 변경
+				sendCertifiFlag = 1;
+				btnSend.setIcon(new ImageIcon("images/join/Btn_Send_EnabledTrue.png"));
+				btnSend.setRolloverIcon(new ImageIcon("images/join/Btn_Send_Rollover.png"));
+				btnSend.setPressedIcon(new ImageIcon("images/join/Btn_Send_Pressed.png"));
+				btnSend.setEnabled(false);	//전송하기 버튼 비활성화
+			}
+		} else if(obj == btnCancel) {
+			lf.setVisible(true);
+			dispose();
 		}
 		
 	}
@@ -424,7 +555,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 			}
 		} else if(obj == tfPhonNum) {
 			//휴대폰번호 텍스트필드 PlaceHolder
-			if(tfPhonNum.getText().equals("  휴대폰번호")) {
+			if(tfPhonNum.getText().equals("  휴대폰번호('-'제외)")) {
 				tfPhonNum.setText("");
 				tfPhonNum.setForeground(Color.BLACK);
 			}
@@ -472,7 +603,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		} else if(obj == tfPhonNum) {
 			//휴대폰번호 텍스트필드 PlaceHolder
 			if(tfPhonNum.getText().isEmpty()) {
-				tfPhonNum.setText("  휴대폰번호");
+				tfPhonNum.setText("  휴대폰번호('-'제외)");
 				tfPhonNum.setForeground(Color.GRAY);
 			}
 		} else if(obj == tfCertifiNum) {
@@ -508,19 +639,33 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 			}
 		}
 		
-		if(!tfPhonNum.getText().equals("  휴대폰번호")) {
+		if(!tfPhonNum.getText().equals("  휴대폰번호('-'제외)") && sendCertifiFlag == 1) {
 			if(Validation.phonNumValidation(tfPhonNum.getText())) {	//전송하기 버튼 활성화 조건 검사
-				tfPhonNum.setEnabled(true);	//전송하기 버튼 활성화
+				btnSend.setEnabled(true);	//전송하기 버튼 활성화
 			} else {
-				tfPhonNum.setEnabled(false);	//전송하기 버튼 비활성화
+				btnSend.setEnabled(false);	//전송하기 버튼 비활성화
 			}
 		}
 		
-		if(!tfId.getText().equals("  아이디") && !tfPw.getText().equals("  비밀번호") && !tfPw2.getText().equals("  비밀번호 확인") &&  !tfName.getText().equals("  이름") && !tfPhonNum.getText().equals("  휴대폰번호")) {
+		if(!tfCertifiNum.getText().equals("  인증번호") && sendCertifiFlag == 2) {
+			if(Validation.certifiNumValidation(tfCertifiNum.getText())) {	//인증하기 버튼 활성화 조건 검사
+				btnSend.setEnabled(true);	//인증하기 버튼 활성화
+			} else {
+				btnSend.setEnabled(false);	//인증하기 버튼 비활성화
+			}
+		}
+		
+		if(!tfId.getText().equals("  아이디") && !tfPw.getText().equals("  비밀번호") && !tfPw2.getText().equals("  비밀번호 확인") &&  !tfName.getText().equals("  이름") && !tfPhonNum.getText().equals("  휴대폰번호('-'제외)")) {
 			if(overlapFlag) {
 				
 			}
 		}
+		
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 
