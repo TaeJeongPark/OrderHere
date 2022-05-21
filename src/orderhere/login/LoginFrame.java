@@ -16,14 +16,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -48,16 +42,18 @@ import orderhere.common.Validation;
 * ===========================================================
 * DATE				AUTHOR				NOTE
 * -----------------------------------------------------------
-* 2022.05.21		TaeJeong Park		최초 생성
+* 2022.05.20		TaeJeong Park		최초 생성
+* 2022.05.20		TaeJeong Park		레이아웃 구현 완료
+* 2022.05.21		TaeJeong Park		기능 구현 완료
 */
 public class LoginFrame extends JFrame implements ActionListener, FocusListener, KeyListener, MouseListener {
 	
-	private String usersId = null;		//회원 아이디
-	private String usersPw = null;		//회원 비밀번호
-	private String usersPwSalt = null;	//회원 비밀번호 난수 데이터
+	private String usersId;				//회원 아이디
+	private String usersPw;				//회원 비밀번호
+	private String usersPwSalt;			//회원 비밀번호 난수 데이터
 	
-	private String usersInputId = null;	//사용자에게 입력 받은 아이디
-	private String usersInputPw = null;	//사용자에게 입력 받은 비밀번호
+	private String usersInId;			//사용자에게 입력 받은 아이디
+	private String usersInPw;			//사용자에게 입력 받은 비밀번호
 	
 	private JTextField tfId;			//아이디 입력 텍스트필드
 	private JPasswordField tfPw;		//비밀번호 입력 패스워드필드
@@ -66,7 +62,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 	private JButton btnLogin;			//로그인 버튼
 	private JLabel btnLblJoin;			//회원가입 화면 이동 라벨버튼
 	private JLabel btnLblFind;			//아이디/비밀번호 찾기 화면 이동 라벨버튼
-	private boolean LoginFlag = false;	//로그인 버튼 활성화 상태 저장
+	private boolean loginFlag = false;	//로그인 버튼 활성화 상태 저장
 	private JoinFrame jf = null;		//회원가입 프레임 객체
 	private FindFrame ff = null;		//아이디/비밀번호 찾기 프레임 객체
 
@@ -92,13 +88,13 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		pnBackground.setBorder(BorderFactory.createEmptyBorder(100, 0, 50, 0));
 		pnBackground.setBackground(new Color(1, 168, 98));
 		
-		add(pnBackground, BorderLayout.CENTER);
-        
         makeLogo();		//로고 영역 생성
         makeInput();	//인풋필드 영역 생성
         makeInfo();		//안내정보 영역 생성
         DB.init();		//DB 연결
 
+        add(pnBackground, BorderLayout.CENTER);
+        
         setVisible(true);
         
     }
@@ -257,30 +253,28 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		Object obj = e.getSource();
 		
 		//로그인 유효성 검사
-		if(LoginFlag && (obj == btnLogin || obj == tfId || obj == tfPw)) {	//로그인 절차 진행여부 감지
+		if(loginFlag && (obj == btnLogin || obj == tfId || obj == tfPw)) {	//로그인 절차 진행여부 감지
 			if(Validation.idValidation(tfId.getText())) {	//ID 유효성 검사 : 영문, 숫자 조합만 사용 가능하며, 첫 자리에 숫자 사용 불가능
 				if(Validation.pwValidation(tfPw.getText())) {	//PW 유효성 검사 : 영문, 숫자, 특수문자 조합만 사용 가능
 					lblError.setText("");
 					System.out.println("로그인 진행");
 					
-					usersInputId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장 
-					usersInputPw = tfPw.getText();	//사용자가 비밀번호 텍스트필드에 입력한 데이터 저장
+					usersInId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장 
+					usersInPw = tfPw.getText();	//사용자가 비밀번호 텍스트필드에 입력한 데이터 저장
 					
-					ResultSet rs = DB.getResult("select * from USERS WHERE USERSID like '" + usersInputId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
-					System.out.println(usersInputId);
+					ResultSet rs = DB.getResult("select * from USERS WHERE USERSID like '" + usersInId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
 					
 					try {
-						while(rs.next()) {
+						if(rs.next()) {
 							usersId = rs.getString("USERSID");	//조회 결과 데이터(회원 아이디) 저장
 							usersPw = rs.getString("USERSPW");	//조회 결과 데이터(회원 비밀번호) 저장
 							usersPwSalt = rs.getString("USERSPWSALT");	//조회 결과 데이터(회원 비밀번호) 저장
+							System.out.println("회원 조회 성공");
 						}
 						
-						System.out.println("회원 조회 성공");
+						usersInPw = Encryption.SHA512(usersInPw, usersPwSalt);	//사용자가 입력한 아이디를 조회된 회원 비밀번호 난수 데이터로 SHA512 암호화
 						
-						usersInputPw = Encryption.SHA512(usersInputPw, usersPwSalt);	//사용자가 입력한 아이디를 조회된 회원 비밀번호 난수 데이터로 SHA512 암호화
-						
-						if(usersId.equals(usersInputId) && usersPw.equals(usersInputPw)) {
+						if(usersId.equals(usersInId) && usersPw.equals(usersInPw)) {
 							System.out.println("로그인 성공");
 						} else {
 							errorHandling();
@@ -362,12 +356,10 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		if(!tfId.getText().equals("  아이디") && !tfPw.getText().equals("  비밀번호")) {
 			if(tfId.getText().length() >= 5 && tfPw.getText().length() >= 8) {	//로그인 버튼 활성화 조건 검사
 				btnLogin.setEnabled(true);	//로그인 버튼 활성화
-				LoginFlag = true;
-			}
-			
-			if(tfId.getText().length() < 5 || tfPw.getText().length() < 8) {	//로그인 버튼 비활성화 조건 검사
+				loginFlag = true;
+			} else {
 				btnLogin.setEnabled(false);	//로그인 버튼 비활성화
-				LoginFlag = false;
+				loginFlag = false;
 			}
 		}
 		

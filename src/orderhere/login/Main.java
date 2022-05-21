@@ -9,7 +9,7 @@ package orderhere.login;
 * ===========================================================
 * DATE				AUTHOR				NOTE
 * -----------------------------------------------------------
-* 2022.05.21		TaeJeong Park		최초 생성
+* 2022.05.20		TaeJeong Park		최초 생성
 */
 public class Main {
 

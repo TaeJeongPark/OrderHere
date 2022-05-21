@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.swing.JOptionPane;
+
 public class DB {
 	
 	public static Connection conn;
@@ -27,13 +29,15 @@ public class DB {
 		} catch (ClassNotFoundException e) {
 			System.out.println("예외 발생 : 해당 드라이버가 없습니다.");
 			e.printStackTrace();
+			connFailAlert();
 		} catch (SQLException e) {
 			System.out.println("예외 발생 : 접속 정보 확인이 필요합니다.");
 			e.printStackTrace();
+			connFailAlert();
 		}
 		
 	}
-	
+
 	//조회용
 	public static ResultSet getResult(String sql) {
 		try {
@@ -42,6 +46,7 @@ public class DB {
 			return stmt.executeQuery(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
+			connFailAlert();
 			return null;
 		}
 	}
@@ -53,8 +58,14 @@ public class DB {
 			System.out.println("Statement 객체 생성 성공");
 			stmt.executeUpdate(sql);
 		} catch (SQLException e) {
+			connFailAlert();
 			e.printStackTrace();
 		}
+	}
+	
+	//오류 메시지 출력 Alert
+	private static void connFailAlert() {
+		JOptionPane.showMessageDialog(null, "접속에 실패했습니다.\n다시 시도해주세요.", "접속 실패", JOptionPane.ERROR_MESSAGE);
 	}
 	
 }
