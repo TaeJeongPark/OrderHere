@@ -20,6 +20,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Base64;
 import java.util.regex.Pattern;
 
@@ -34,6 +36,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import orderhere.common.DB;
+import orderhere.common.Encryption;
+import orderhere.common.Validation;
 
 /**
 * @packageName	: orderhere.login
@@ -49,10 +53,11 @@ import orderhere.common.DB;
 public class LoginFrame extends JFrame implements ActionListener, FocusListener, KeyListener, MouseListener {
 	
 	private String usersId = null;		//회원 아이디
-	private String userPw = null;		//회원 비밀번호
+	private String usersPw = null;		//회원 비밀번호
+	private String usersPwSalt = null;	//회원 비밀번호 난수 데이터
 	
-	private String userInputId = null;	//사용자에게 입력 받은 아이디
-	private String userInputPw = null;	//사용자에게 입력 받은 비밀번호
+	private String usersInputId = null;	//사용자에게 입력 받은 아이디
+	private String usersInputPw = null;	//사용자에게 입력 받은 비밀번호
 	
 	private JTextField tfId;			//아이디 입력 텍스트필드
 	private JPasswordField tfPw;		//비밀번호 입력 패스워드필드
@@ -240,45 +245,9 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		tfPw.setForeground(Color.GRAY);
 		btnLogin.setEnabled(false);
 		lblError.setText("아이디 혹은 비밀번호가 일치하지 않습니다.");
+		tfId.requestFocus();
 		
-	}
-	
-	//Salt 생성
-	public static String Salt() { 
-		
-		String salt = "";
-		
-		try {
-			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-			byte[] bytes = new byte[16];
-			random.nextBytes(bytes);
-			salt = new String(Base64.getEncoder().encode(bytes));
-		} catch (NoSuchAlgorithmException e) {
-			System.out.println("난수 생성 오류");
-			e.printStackTrace();	
-		}
-		
-		return salt;
-		
-	}
-	
-	//SHA512 암호화
-	public static String SHA512(String password, String hash) {
-		
-		String salt = hash + password;
-		String hex = null;
-		
-		try {
-			MessageDigest msg = MessageDigest.getInstance("SHA-512");
-			msg.update(salt.getBytes());
-			
-			hex = String.format("%128x", new BigInteger(1, msg.digest()));
-		} catch (Exception e) {
-			System.out.println("암호화 오류");
-			e.printStackTrace();
-		}
-		
-		return hex;
+		System.out.println("로그인 실패");
 		
 	}
 
@@ -289,15 +258,40 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		
 		//로그인 유효성 검사
 		if(LoginFlag && (obj == btnLogin || obj == tfId || obj == tfPw)) {	//로그인 절차 진행여부 감지
-			if(Pattern.matches("^[a-zA-Z0-9]{5,12}$", tfId.getText()) && !Pattern.matches("^[0-9]$", tfId.getText().substring(0, 1))) {	//아이디 작성 규칙 성립여부 검사(영문, 숫자 조합만 사용 가능)
-				if(Pattern.matches("^[a-zA-Z0-9!@#$]{8,15}$", tfPw.getText())) {	//비밀번호 작성 규칙 성립여부 검사(영문, 숫자 조합만 사용 가능)
+			if(Validation.idValidation(tfId.getText())) {	//ID 유효성 검사 : 영문, 숫자 조합만 사용 가능하며, 첫 자리에 숫자 사용 불가능
+				if(Validation.pwValidation(tfPw.getText())) {	//PW 유효성 검사 : 영문, 숫자, 특수문자 조합만 사용 가능
 					lblError.setText("");
 					System.out.println("로그인 진행");
 					
-					userInputId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장 
-					userInputPw = tfPw.getText();	//사용자가 비밀번호 텍스트필드에 입력한 데이터 저장
+					usersInputId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장 
+					usersInputPw = tfPw.getText();	//사용자가 비밀번호 텍스트필드에 입력한 데이터 저장
 					
+					ResultSet rs = DB.getResult("select * from USERS WHERE USERSID like '" + usersInputId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
+					System.out.println(usersInputId);
 					
+					try {
+						while(rs.next()) {
+							usersId = rs.getString("USERSID");	//조회 결과 데이터(회원 아이디) 저장
+							usersPw = rs.getString("USERSPW");	//조회 결과 데이터(회원 비밀번호) 저장
+							usersPwSalt = rs.getString("USERSPWSALT");	//조회 결과 데이터(회원 비밀번호) 저장
+						}
+						
+						System.out.println("회원 조회 성공");
+						
+						usersInputPw = Encryption.SHA512(usersInputPw, usersPwSalt);	//사용자가 입력한 아이디를 조회된 회원 비밀번호 난수 데이터로 SHA512 암호화
+						
+						if(usersId.equals(usersInputId) && usersPw.equals(usersInputPw)) {
+							System.out.println("로그인 성공");
+						} else {
+							errorHandling();
+						}
+						
+						
+					} catch (SQLException e1) {
+						System.out.println("예외발생 : 일치하는 회원 정보가 없습니다.");
+						errorHandling();
+						e1.printStackTrace();
+					}
 				} else {
 					errorHandling();
 				}

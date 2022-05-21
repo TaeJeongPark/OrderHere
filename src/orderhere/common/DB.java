@@ -23,7 +23,7 @@ public class DB {
 			
 			stmt = conn.createStatement();
 			
-			System.out.println("OK");
+			System.out.println("DB연결 성공");
 		} catch (ClassNotFoundException e) {
 			System.out.println("예외 발생 : 해당 드라이버가 없습니다.");
 			e.printStackTrace();
@@ -38,6 +38,7 @@ public class DB {
 	public static ResultSet getResult(String sql) {
 		try {
 			stmt = conn.createStatement();
+			System.out.println("Statement 객체 생성 성공");
 			return stmt.executeQuery(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -49,6 +50,7 @@ public class DB {
 	public static void executeSQL(String sql) {
 		try {
 			stmt = conn.createStatement();
+			System.out.println("Statement 객체 생성 성공");
 			stmt.executeUpdate(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();

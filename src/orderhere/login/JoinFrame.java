@@ -9,6 +9,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import orderhere.common.Encryption;
+
 /**
 * @packageName	: orderhere.login
 * @fileName		: JoinFrame.java
@@ -73,7 +75,7 @@ public class JoinFrame extends JFrame {
 
 	private void makeInput() {
 		
-		
+		String salt = Encryption.Salt();
 		
 	}
 
