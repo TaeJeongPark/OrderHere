@@ -6,10 +6,10 @@ public class Test {
 	public static void main(String[] args) {
 //		new Cart();
 //		new OrderList();
-		new Cart();
+		//new Cart();
 //		new Payment();
 //		new OrderDetails();
-		System.out.println("   ");
+		System.out.println("    ");
 		
 	}
 }
