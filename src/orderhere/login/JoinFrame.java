@@ -49,6 +49,7 @@ import orderhere.common.Validation;
 * -----------------------------------------------------------
 * 2022.05.21		TaeJeong Park		최초 생성
 * 2022.05.21		TaeJeong Park		레이아웃 구현 완료
+* 2022.05.22		TaeJeong Park		기능 구현 완료
 */
 public class JoinFrame extends JFrame implements ActionListener, FocusListener, KeyListener, ItemListener, Runnable {
 	
@@ -56,7 +57,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 	private String usersInPw;		//사용자에게 입력 받은 비밀번호
 	private String usersInName; 	//사용자에게 입력 받은 이름
 	private String usersInBirthday; //사용자에게 입력 받은 생년월일
-	private int usersInPhoneNum; 	//사용자에게 입력 받은 휴대폰번호
+	private String usersInPhoneNum; //사용자에게 입력 받은 휴대폰번호
 	
 	private LoginFrame lf;					//로그인 프레임 객체
 	private JPanel pnBackground;			//백그라운드 패널
@@ -80,10 +81,13 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 	private boolean overlapFlag = false;	//중복확인 완료여부 저장
 	private int sendCertifiFlag = 1;		//전송하기 버튼이면 1, 인증하기 버튼이면 2
 	private int certifiNum;					//인증번호
-	private boolean certifiFlag = false;	//인증 성공여부 저장
+	private boolean certifiFlag = false;	//인증 완료여부 저장
 	private int min = 3;					//인증시간 분
 	private int sec = 0;					//인증시간 초
 	private Thread countThread = null;		//인증시간 카운트 Thread
+	private int year = 2003;				//생년 저장
+	private int month = 1;					//생월 저장
+	private int day = 1;					//생일 저장
 	
 	//로그인 프레임
 	public JoinFrame(String title, LoginFrame lf) {
@@ -355,9 +359,13 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		pnInputBackground.add(pnInput);
 		pnBackground.add(pnInputBackground, BorderLayout.CENTER);
 		
-		
-//		String salt = Encryption.Salt();
-		
+	}
+	
+	//아이디 텍스트필드 초기화
+	private void idTfClear() {
+		tfId.setText("  아이디");
+		tfId.setForeground(Color.GRAY);
+		btnOverlapChk.setEnabled(false);
 	}
 	
 	//숫자 6자리 인증번호 생성
@@ -428,7 +436,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		if(obj == btnOverlapChk) {
 			//아이디 유효성 검사
 			if(Validation.idValidation(tfId.getText())) {
-				System.out.println("중복확인 진행");
+				System.out.println("아이디 중복여부 검사");
 				
 				usersInId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장
 				
@@ -438,6 +446,8 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 					if(rs.next()) {
 						System.out.println("아이디 중복");
 						JOptionPane.showMessageDialog(this, "이미 사용중인 아이디입니다.\n다시 시도해주세요.", "아이디 중복", JOptionPane.ERROR_MESSAGE);
+						
+						idTfClear();	//아이디 텍스트필드 초기화
 					} else {
 						System.out.println("아이디 사용가능");
 						
@@ -447,10 +457,9 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 							tfId.setEnabled(false);	//아이디 텍스트필드 비활성화
 							btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
 							overlapFlag = true;
+							okBtnChk();
 						} else {
-							tfId.setText("  아이디");
-							tfId.setForeground(Color.GRAY);
-							btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
+							idTfClear();	//아이디 텍스트필드 초기화
 						}
 					}
 				} catch (SQLException e1) {
@@ -459,6 +468,8 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 				}
 			} else {
 				JOptionPane.showMessageDialog(this, "사용할 수 없는 아이디입니다.\n아이디는 영문, 숫자 조합의 5자리 이상 12자리 이하로 사용 가능하며,\n첫 자리에 숫자를 사용할 수 없습니다.\n다시 시도해주세요.", "규칙 위배", JOptionPane.ERROR_MESSAGE);
+				
+				idTfClear();	//아이디 텍스트필드 초기화
 			}
 		} else if(obj == btnSend && sendCertifiFlag == 1 && Validation.phonNumValidation(tfPhonNum.getText())) {
 			tfPhonNum.setEnabled(false);	//휴대폰번호 텍스트필드 비활성화
@@ -486,9 +497,9 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 			System.out.println("인증번호 일치여부 검사");
 			
 			if(certifiNum == Integer.parseInt(tfCertifiNum.getText())) {
-				System.out.println("인증성공");
+				System.out.println("인증완료");
 				
-				JOptionPane.showMessageDialog(this, "인증에 성공했습니다.", "인증 성공", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(this, "인증이 완료되었습니다.", "인증 완료", JOptionPane.PLAIN_MESSAGE);
 				
 				min = -1;
 				
@@ -496,6 +507,8 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 				btnSend.setEnabled(false);		//인증하기 버튼 비활성화
 				
 				certifiFlag  = true;
+				
+				okBtnChk();
 			} else {
 				JOptionPane.showMessageDialog(this, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
 				
@@ -516,8 +529,48 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 				btnSend.setEnabled(false);	//전송하기 버튼 비활성화
 			}
 		} else if(obj == btnCancel) {
-			lf.setVisible(true);
-			dispose();
+			lf.setVisible(true);	//로그인 화면 활성화
+			dispose();	//현재 화면 종료
+		} else if(obj == btnOk) {
+			usersInId = tfId.getText();					//입력받은 아이디 저장
+			usersInPw = tfPw.getText();					//입력받은 비밀번호 저장
+			usersInName = tfName.getText();				//입력받은 이름 저장
+			
+			//입력받은 생년월일 YYYYMMDD 형태로 저장
+			usersInBirthday = Integer.toString(year);
+			if(month < 10) usersInBirthday = usersInBirthday + "0" + Integer.toString(month);
+			else usersInBirthday = usersInBirthday + Integer.toString(month);
+			if(day < 10) usersInBirthday = usersInBirthday + "0" + Integer.toString(day);
+			else usersInBirthday = usersInBirthday + Integer.toString(day);
+			
+			usersInPhoneNum = tfPhonNum.getText();		//입력받은 휴대폰번호 저장
+			
+			//입력받은 데이터 유효성 검사
+			if(Validation.idValidation(usersInId) && Validation.pwValidation(usersInPw) && Validation.nameValidation(usersInName) && Validation.birthdayValidation(usersInBirthday) && Validation.phonNumValidation(usersInPhoneNum)) {
+				if(usersInPw.equals(tfPw2.getText())) {	//비밀번호와 비밀번호 확인 일치여부 검사
+					String pwSalt = Encryption.Salt();	//SHA512 암호화에 사용할 난수 생성
+					usersInPw = Encryption.SHA512(usersInPw, pwSalt);	//입력받은 비밀번호를 Salt 값으로 SHA512 암호화
+					
+					String sqlInsert = "INSERT INTO ALLNIGHT.USERS (USERSID, USERSPW, USERSNAME, USERSBIRTHDAY, USERSPHONNUM, USERSCASH, USERSPWSALT)"
+							+ " VALUES('" + usersInId + "', '" + usersInPw + "', '" + usersInName + "', '" + usersInBirthday + "', '" + usersInPhoneNum + "', 0, '" + pwSalt + "')";	//회원정보 Insert문 생성
+					DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
+					
+					JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다.", "회원가입 완료", JOptionPane.PLAIN_MESSAGE);
+					
+					lf.setVisible(true);
+					dispose();
+				} else {
+					JOptionPane.showMessageDialog(this, "비밀번호와 비밀번호 확인이 일치하지 않습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
+					
+					//비밀번호 확인 텍스트필드 초기화
+					tfPw2.setText("  비밀번호 확인");
+					tfPw2.setEchoChar((char)0);	//작성되는 문자 그대로 보여지게 설정
+					tfPw2.setForeground(Color.GRAY);
+					btnOk.setEnabled(false);	//확인 버튼 비활성화
+				}
+			} else {
+				JOptionPane.showMessageDialog(this, "정확하게 입력되지 않은 항목이 있습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 		
 	}
@@ -577,8 +630,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		if(obj == tfId) {
 			//아이디 텍스트필드 PlaceHolder
 			if(tfId.getText().isEmpty()) {
-				tfId.setText("  아이디");
-				tfId.setForeground(Color.GRAY);
+				idTfClear();	//아이디 텍스트필드 초기화
 			}
 		} else if(obj == tfPw) {
 			//비밀번호 텍스트필드 PlaceHolder
@@ -630,16 +682,14 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 	public void keyReleased(KeyEvent e) {
 		
 		if(!tfId.getText().equals("  아이디")) {
-			if(tfId.getText().length() >= 5 && tfId.getText().length() <= 12) {	//중복확인 버튼 활성화 조건 검사
+			if(tfId.getText().length() >= 5 && tfId.getText().length() <= 12 && !overlapFlag) {	//중복확인 버튼 활성화 조건 검사
 				btnOverlapChk.setEnabled(true);	//중복확인 버튼 활성화
-				overlapFlag = true;
 			} else {
 				btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
-				overlapFlag = false;
 			}
 		}
 		
-		if(!tfPhonNum.getText().equals("  휴대폰번호('-'제외)") && sendCertifiFlag == 1) {
+		if(!tfPhonNum.getText().equals("  휴대폰번호('-'제외)") && sendCertifiFlag == 1 && !certifiFlag) {
 			if(Validation.phonNumValidation(tfPhonNum.getText())) {	//전송하기 버튼 활성화 조건 검사
 				btnSend.setEnabled(true);	//전송하기 버튼 활성화
 			} else {
@@ -647,7 +697,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 			}
 		}
 		
-		if(!tfCertifiNum.getText().equals("  인증번호") && sendCertifiFlag == 2) {
+		if(!tfCertifiNum.getText().equals("  인증번호") && sendCertifiFlag == 2 && !certifiFlag) {
 			if(Validation.certifiNumValidation(tfCertifiNum.getText())) {	//인증하기 버튼 활성화 조건 검사
 				btnSend.setEnabled(true);	//인증하기 버튼 활성화
 			} else {
@@ -655,17 +705,61 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 			}
 		}
 		
-		if(!tfId.getText().equals("  아이디") && !tfPw.getText().equals("  비밀번호") && !tfPw2.getText().equals("  비밀번호 확인") &&  !tfName.getText().equals("  이름") && !tfPhonNum.getText().equals("  휴대폰번호('-'제외)")) {
-			if(overlapFlag) {
-				
+		okBtnChk();
+		
+	}
+
+	//확인 버튼 활성화 조건 검사
+	private void okBtnChk() {
+		if(!tfId.getText().equals("  아이디") && !tfPw.getText().equals("  비밀번호") && !tfPw2.getText().equals("  비밀번호 확인") &&  !tfName.getText().equals("  이름")
+				&& !tfPhonNum.getText().equals("  휴대폰번호('-'제외)")&& !tfCertifiNum.getText().equals("  인증번호")) {
+			if(overlapFlag && Validation.pwValidation(tfPw.getText()) && Validation.pwValidation(tfPw2.getText()) && Validation.nameValidation(tfName.getText())
+					&& Validation.birthyearValidation(year) && Validation.birthmonthValidation(month) && Validation.birthdayteValidation(month, day) && certifiFlag) {
+				btnOk.setEnabled(true);	//확인 버튼 활성화
+			} else {
+				btnOk.setEnabled(false);	//확인 버튼 비활성화
 			}
 		}
-		
 	}
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		// TODO Auto-generated method stub
+		
+		Object obj = e.getSource();
+		
+		if(obj == cbYear) {
+			year = (int) cbYear.getSelectedItem();
+		} else if(obj == cbMonth) {
+			month = (int) cbMonth.getSelectedItem();
+			
+			//선택된 생월에 따라 선택 가능한 생일 항목 수정 
+			if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+				if(cbDay.getItemCount() == 30) cbDay.addItem(31);
+				else if(cbDay.getItemCount() == 28) {
+					cbDay.addItem(29);
+					cbDay.addItem(30);
+					cbDay.addItem(31);
+				}
+			} else if(month == 4 || month == 6 || month == 9 || month == 11) {
+				if(cbDay.getItemCount() == 31) cbDay.removeItem(31);
+				else if(cbDay.getItemCount() == 28) {
+					cbDay.addItem(29);
+					cbDay.addItem(30);
+				}
+			} else if(month == 2) {
+				if(cbDay.getItemCount() == 31) {
+					cbDay.removeItem(31);
+					cbDay.removeItem(30);
+					cbDay.removeItem(29);
+				}
+				else if(cbDay.getItemCount() == 30) {
+					cbDay.removeItem(30);
+					cbDay.removeItem(29);
+				}
+			}
+		} else if(obj == cbDay) {
+			day = (int) cbDay.getSelectedItem();
+		}
 		
 	}
 
