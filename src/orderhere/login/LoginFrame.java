@@ -379,11 +379,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		} else if(obj == btnLblFind) {	//아이디/비밀번호 찾기 라벨버튼 클릭시
 			btnLblFind.setForeground(Color.BLACK);
 			
-			if(ff == null) {	//아이디/비밀번호 찾기 객체 생성여부 확인
-				ff = new FindFrame("Find ID/PW", this);	//아이디/비밀번호 찾기 화면 생성
-			} else {
-				ff.setVisible(true);	//아이디/비밀번호 찾기 화면 노출
-			}
+			ff = new FindFrame("Find ID/PW", this);	//아이디/비밀번호 찾기 화면 생성
 			
 			setVisible(false);	//로그인 화면 제거
 		}

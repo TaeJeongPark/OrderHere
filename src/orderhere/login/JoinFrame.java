@@ -60,7 +60,6 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 	private String usersInPhoneNum; //사용자에게 입력 받은 휴대폰번호
 	
 	private LoginFrame lf;					//로그인 프레임 객체
-	private JPanel pnBackground;			//백그라운드 패널
 	private JTextField tfId;				//아이디 입력 텍스트필드
 	private JButton btnOverlapChk;			//중복확인 버튼
 	private JPasswordField tfPw;			//비밀번호 입력 텍스트필드
@@ -73,7 +72,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 	private JComboBox<Integer> cbDay;		//생일 콤보박스
 	private Integer[] dayList = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
 	private JTextField tfPhonNum;			//휴대폰번호 입력 텍스트필드
-	private AbstractButton btnSend;			//전송 버튼
+	private JButton btnSend;				//전송 버튼
 	private JTextField tfCertifiNum;		//인증번호 입력 텍스트필드
 	private JButton btnCancel;				//취소 버튼
 	private JButton btnOk;					//확인 버튼
@@ -98,26 +97,19 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
         setSize(1050, 789);
         setResizable(false);
         setLayout(new BorderLayout());
+        setBackground(new Color(1, 168, 98));
         
         
         //타이틀바 아이콘 설정
         Toolkit tk = Toolkit.getDefaultToolkit();
         Image img = tk.getImage("images/common/logo_titleBar.png");
         setIconImage(img);
-        
-        
-        pnBackground = new JPanel();
-		pnBackground.setLayout(new BorderLayout());
-		pnBackground.setBorder(BorderFactory.createEmptyBorder(100, 0, 50, 0));
-		pnBackground.setBackground(new Color(1, 168, 98));
 		
 		this.lf = lf;
         
         makeTitle();	//타이틀 영역 생성
         makeInput();	//인풋필드 영역 생성
         DB.init();		//DB 연결
-
-        add(pnBackground, BorderLayout.CENTER);
         
         setVisible(true);
 		
@@ -170,7 +162,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		
 		JPanel pnInput = new JPanel();
 		pnInput.setLayout(new GridLayout(8, 1, 5, 5));
-//		pnInput.setBorder(new EmptyBorder(30, 0, 0, 0));	//패널 패딩 설정
+		pnInput.setBorder(new EmptyBorder(50, 0, 0, 20));	//패널 패딩 설정
 		pnInput.setBackground(new Color(1, 168, 98));		//패널 색상 배경생과 동일하게 설정
 		
 		
@@ -261,7 +253,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		//휴대폰번호 텍스트필드 생성
 		tfPhonNum = new JTextField("  휴대폰번호('-'제외)");
 		tfPhonNum.setPreferredSize(new Dimension(324, 48));	//텍스트필드 크기 설정
-		tfPhonNum.setFont(new Font("맑은고딕", Font.PLAIN, tfId.getFont().getSize()));	//텍스트필드 폰트 설정
+		tfPhonNum.setFont(new Font("맑은고딕", Font.PLAIN, tfPhonNum.getFont().getSize()));	//텍스트필드 폰트 설정
 		tfPhonNum.setForeground(Color.GRAY);	//텍스트필드 폰트 생상 설정
 		tfPhonNum.addFocusListener(this);
 		tfPhonNum.addKeyListener(this);
@@ -287,7 +279,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		//인증번호 텍스트필드 생성
 		tfCertifiNum = new JTextField("  인증번호");
 		tfCertifiNum.setPreferredSize(new Dimension(324, 48));	//텍스트필드 크기 설정
-		tfCertifiNum.setFont(new Font("맑은고딕", Font.PLAIN, tfName.getFont().getSize()));	//텍스트필드 폰트 설정
+		tfCertifiNum.setFont(new Font("맑은고딕", Font.PLAIN, tfCertifiNum.getFont().getSize()));	//텍스트필드 폰트 설정
 		tfCertifiNum.setForeground(Color.GRAY);	//텍스트필드 폰트 생상 설정
 		tfCertifiNum.addFocusListener(this);
 		tfCertifiNum.addKeyListener(this);
@@ -295,7 +287,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		//인증시간 카운트 라벨 생성
 		lblCount = new JLabel();
 		lblCount.setPreferredSize(new Dimension(90, 48));	//라벨 크기 설정
-		lblCount.setFont(new Font("맑은고딕", Font.PLAIN, tfId.getFont().getSize()));	//라벨 폰트 설정
+		lblCount.setFont(new Font("맑은고딕", Font.PLAIN, lblCount.getFont().getSize()));	//라벨 폰트 설정
 		lblCount.setForeground(Color.RED);	//라벨 폰트 생상 설정
 		lblCount.setHorizontalAlignment(JLabel.CENTER);	//라벨 가운데 정렬
 		lblCount.setOpaque(true);	//라벨 투명도 설정
@@ -357,7 +349,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		pnInput.add(pnBtn);
 		
 		pnInputBackground.add(pnInput);
-		pnBackground.add(pnInputBackground, BorderLayout.CENTER);
+		add(pnInputBackground, BorderLayout.CENTER);
 		
 	}
 	
