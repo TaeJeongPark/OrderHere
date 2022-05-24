@@ -15,7 +15,6 @@ public class CartDBData {
 	private int opionSyrupNum;
 	private String optionWhippedcream;
 	
-	
 	public int getMenuid() {
 		return menuid;
 	}

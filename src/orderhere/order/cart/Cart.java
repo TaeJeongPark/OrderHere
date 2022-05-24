@@ -81,7 +81,7 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			setLayout(null);
 			
-			add(CommonPanel.createTop("CART"));
+			add(new CommonPanel().createTop("Cart"));
 			createBody();
 			
 			setVisible(true);
