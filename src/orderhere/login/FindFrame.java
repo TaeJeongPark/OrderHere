@@ -49,6 +49,7 @@ import orderhere.common.Validation;
 * -----------------------------------------------------------
 * 2022.05.21		TaeJeong Park		최초 생성
 * 2022.05.22		TaeJeong Park		레이아웃 구현 완료
+* 2022.05.24		TaeJeong Park		기능 구현 완료
 */
 public class FindFrame extends JFrame implements ActionListener, FocusListener, KeyListener, ItemListener, Runnable {
 
