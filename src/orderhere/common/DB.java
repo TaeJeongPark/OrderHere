@@ -8,6 +8,17 @@ import java.sql.Statement;
 
 import javax.swing.JOptionPane;
 
+/**
+* @packageName	: orderhere.common
+* @fileName		: DB.java
+* @author		: TaeJeong Park
+* @date			: 2022.05.21
+* @description	: DB 접속을 위한 클래스
+* ===========================================================
+* DATE				AUTHOR				NOTE
+* -----------------------------------------------------------
+* 2022.05.21		TaeJeong Park		최초 생성
+*/
 public class DB {
 	
 	public static Connection conn;

@@ -2,6 +2,17 @@ package orderhere.common;
 
 import java.util.regex.Pattern;
 
+/**
+* @packageName	: orderhere.common
+* @fileName		: Validation.java
+* @author		: TaeJeong Park
+* @date			: 2022.05.21
+* @description	: 유효성 검사를 위한 클래스
+* ===========================================================
+* DATE				AUTHOR				NOTE
+* -----------------------------------------------------------
+* 2022.05.21		TaeJeong Park		최초 생성
+*/
 public class Validation {
 
 	//ID 유효성 검사 : 영문, 숫자 조합의 5자리 이상 12자리 이하로 사용 가능하며, 첫 자리에 숫자 사용 불가능

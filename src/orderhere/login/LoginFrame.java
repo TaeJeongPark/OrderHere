@@ -262,25 +262,26 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 					usersInId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장 
 					usersInPw = tfPw.getText();	//사용자가 비밀번호 텍스트필드에 입력한 데이터 저장
 					
-					ResultSet rs = DB.getResult("select * from USERS WHERE USERSID like '" + usersInId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
+					ResultSet rs = DB.getResult("select * from USERS WHERE USERSID = '" + usersInId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
 					
 					try {
 						if(rs.next()) {
 							usersId = rs.getString("USERSID");	//조회 결과 데이터(회원 아이디) 저장
 							usersPw = rs.getString("USERSPW");	//조회 결과 데이터(회원 비밀번호) 저장
 							usersPwSalt = rs.getString("USERSPWSALT");	//조회 결과 데이터(회원 비밀번호) 저장
+							
 							System.out.println("회원 조회 성공");
-						}
-						
-						usersInPw = Encryption.SHA512(usersInPw, usersPwSalt);	//사용자가 입력한 아이디를 조회된 회원 비밀번호 난수 데이터로 SHA512 암호화
-						
-						if(usersId.equals(usersInId) && usersPw.equals(usersInPw)) {
-							System.out.println("로그인 성공");
+							
+							usersInPw = Encryption.SHA512(usersInPw, usersPwSalt);	//사용자가 입력한 아이디를 조회된 회원 비밀번호 난수 데이터로 SHA512 암호화
+							
+							if(usersId.equals(usersInId) && usersPw.equals(usersInPw)) {
+								System.out.println("로그인 성공");
+							} else {
+								errorHandling();
+							}
 						} else {
 							errorHandling();
 						}
-						
-						
 					} catch (SQLException e1) {
 						System.out.println("예외발생 : DB 조회에 실패했습니다.");
 						errorHandling();
@@ -375,13 +376,13 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 			
 			jf = new JoinFrame("Join", this);		//회원가입 화면 생성	
 			
-			setVisible(false);
+			setVisible(false);	//로그인 화면 미노출
 		} else if(obj == btnLblFind) {	//아이디/비밀번호 찾기 라벨버튼 클릭시
 			btnLblFind.setForeground(Color.BLACK);
 			
 			ff = new FindFrame("Find ID/PW", this);	//아이디/비밀번호 찾기 화면 생성
 			
-			setVisible(false);	//로그인 화면 제거
+			setVisible(false);	//로그인 화면 미노출
 		}
 		
 	}
