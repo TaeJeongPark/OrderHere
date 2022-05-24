@@ -18,6 +18,7 @@ import javax.swing.JOptionPane;
 * DATE				AUTHOR				NOTE
 * -----------------------------------------------------------
 * 2022.05.21		TaeJeong Park		최초 생성
+* 2022.05.21		TaeJeong Park		기능 구현
 */
 public class DB {
 	
@@ -56,6 +57,7 @@ public class DB {
 			System.out.println("Statement 객체 생성 성공");
 			return stmt.executeQuery(sql);
 		} catch (SQLException e) {
+			System.out.println("예외 발생 : DB 조회에 실패했습니다.");
 			e.printStackTrace();
 			connFailAlert();
 			return null;
@@ -69,14 +71,28 @@ public class DB {
 			System.out.println("Statement 객체 생성 성공");
 			stmt.executeUpdate(sql);
 		} catch (SQLException e) {
-			connFailAlert();
+			System.out.println("예외 발생 : DB 수정에 실패했습니다.");
 			e.printStackTrace();
+			connFailAlert();
+		}
+	}
+	
+	//DB 연결 종료
+	public static void closeDB(Connection conn, Statement stmt) {
+		try {
+			stmt.close();
+			conn.close();
+			System.out.println("DB 연결 종료 성공");
+		} catch (SQLException e) {
+			System.out.println("예외 발생 : DB 연결 종료에 실패했습니다.");
+			e.printStackTrace();
+			connFailAlert();
 		}
 	}
 	
 	//오류 메시지 출력 Alert
 	private static void connFailAlert() {
-		JOptionPane.showMessageDialog(null, "접속에 실패했습니다.\n다시 시도해주세요.", "접속 실패", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, "서버 접속에 실패했습니다.\n다시 시도해주세요.", "접속 실패", JOptionPane.ERROR_MESSAGE);
 	}
 	
 }

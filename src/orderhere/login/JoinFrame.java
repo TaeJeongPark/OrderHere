@@ -109,7 +109,6 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
         
         makeTitle();	//타이틀 영역 생성
         makeInput();	//인풋필드 영역 생성
-        DB.init();		//DB 연결
         
         setVisible(true);
 		
@@ -490,6 +489,8 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 				
 				usersInId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장
 				
+				DB.init();	//DB 연결
+				
 				ResultSet rs = DB.getResult("select * from USERS WHERE USERSID like '" + usersInId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
 				
 				try {
@@ -497,6 +498,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 						System.out.println("아이디 중복");
 						JOptionPane.showMessageDialog(this, "이미 사용중인 아이디입니다.\n다시 시도해주세요.", "아이디 중복", JOptionPane.ERROR_MESSAGE);
 						
+						btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
 						setPH(tfId);	//PlaceHolder 세팅
 					} else {
 						System.out.println("아이디 사용가능");
@@ -509,16 +511,20 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 							overlapFlag = true;
 							okBtnChk();
 						} else {
+							btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
 							setPH(tfId);	//PlaceHolder 세팅
 						}
 					}
 				} catch (SQLException e1) {
 					System.out.println("예외발생 : DB 조회에 실패했습니다.");
 					e1.printStackTrace();
+				} finally {
+					DB.closeDB(DB.conn, DB.stmt);	//DB 연결 종료
 				}
 			} else {
 				JOptionPane.showMessageDialog(this, "사용할 수 없는 아이디입니다.\n아이디는 영문, 숫자 조합의 5자리 이상 12자리 이하로 사용 가능하며,\n첫 자리에 숫자를 사용할 수 없습니다.\n다시 시도해주세요.", "규칙 위배", JOptionPane.ERROR_MESSAGE);
 				
+				btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
 				setPH(tfId);	//PlaceHolder 세팅
 			}
 		} else if(obj == btnSend && sendCertifiFlag == 1 && Validation.phonNumValidation(tfPhonNum.getText())) {
@@ -603,9 +609,13 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 						String pwSalt = Encryption.Salt();	//SHA512 암호화에 사용할 난수 생성
 						usersInPw = Encryption.SHA512(usersInPw, pwSalt);	//입력받은 비밀번호를 Salt 값으로 SHA512 암호화
 						
+						DB.init();	//DB 연결
+						
 						String sqlInsert = "INSERT INTO ALLNIGHT.USERS (USERSID, USERSPW, USERSNAME, USERSBIRTHDAY, USERSPHONNUM, USERSCASH, USERSPWSALT)"
 								+ " VALUES('" + usersInId + "', '" + usersInPw + "', '" + usersInName + "', '" + usersInBirthday + "', '" + usersInPhoneNum + "', 0, '" + pwSalt + "')";	//회원정보 Insert문 생성
 						DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
+						
+						DB.closeDB(DB.conn, DB.stmt);	//DB 연결 종료
 						
 						JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다.", "회원가입 완료", JOptionPane.PLAIN_MESSAGE);
 						

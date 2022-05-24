@@ -80,6 +80,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 	private int year = 2003;				//생년 저장
 	private int month = 1;					//생월 저장
 	private int day = 1;					//생일 저장
+	private boolean certifiFlagId = false;	//인증 완료여부 저장
 	
 	//비밀번호 찾기
 	private JTextField tfIdPw;				//아이디 입력 텍스트필드
@@ -92,10 +93,10 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 	private JPasswordField tfNewPwPw;		//새 비밀번호 입력 텍스트필드
 	private JPasswordField tfNewPw2Pw;		//새 비밀번호 확인 입력 텍스트필드
 	private JButton btnPwChange;			//비밀번호 변경 버튼
+	private boolean certifiFlagPw = false;	//인증 완료여부 저장
 	
 	//공통
 	private int certifiNum;					//인증번호
-	private boolean certifiFlag = false;	//인증 완료여부 저장
 	private int min = 3;					//인증시간 분
 	private int sec = 0;					//인증시간 초
 	private Thread countThread = null;		//인증시간 카운트 Thread
@@ -125,7 +126,6 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
         makeTitle();	//타이틀 영역 생성
         makeIdFind();	//아이디 조회 영역 생성
         makePwFind();	//비밀번호 조회 영역 생성
-        DB.init();		//DB 연결
 
         add(tabPane, BorderLayout.CENTER);
 
@@ -537,7 +537,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 	//아이디 찾기 버튼 활성화 조건 검사
 	private void idFindBtnChk() {
 		if(!tfNameId.getText().equals("  이름") && !tfPhonNumId.getText().equals("  휴대폰번호('-'제외)")&& !tfCertifiNumId.getText().equals("  인증번호")) {
-			if(Validation.nameValidation(tfNameId.getText()) && Validation.birthyearValidation(year) && Validation.birthmonthValidation(month) && Validation.birthdayteValidation(month, day) && Validation.phonNumValidation(tfPhonNumId.getText()) && certifiFlag) {
+			if(Validation.nameValidation(tfNameId.getText()) && Validation.birthyearValidation(year) && Validation.birthmonthValidation(month) && Validation.birthdayteValidation(month, day) && Validation.phonNumValidation(tfPhonNumId.getText()) && certifiFlagId) {
 				btnIdFind.setEnabled(true);	//아이디 찾기 버튼 활성화
 			} else {
 				btnIdFind.setEnabled(false);	//아이디 찾기 버튼 비활성화
@@ -548,7 +548,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 	//비밀번호 찾기 버튼 활성화 조건 검사
 	private void pwFindBtnChk() {
 		if(!tfIdPw.getText().equals("  아이디") && !tfPhonNumPw.getText().equals("  휴대폰번호('-'제외)")&& !tfCertifiNumPw.getText().equals("  인증번호")) {
-			if(Validation.idValidation(tfIdPw.getText()) && Validation.phonNumValidation(tfPhonNumPw.getText()) && certifiFlag) {
+			if(Validation.idValidation(tfIdPw.getText()) && Validation.phonNumValidation(tfPhonNumPw.getText()) && certifiFlagId) {
 				btnPwFind.setEnabled(true);	//비밀번호 찾기 버튼 활성화
 			} else {
 				btnPwFind.setEnabled(false);	//비밀번호 찾기 버튼 비활성화
@@ -563,9 +563,9 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			setPH(tfNameId);
 			setPH(tfPhonNumId);
 			setPH(tfCertifiNumId);
-			cbYear.setSelectedIndex(1);
-			cbMonth.setSelectedIndex(1);
-			cbDay.setSelectedIndex(1);
+			cbYear.setSelectedIndex(0);
+			cbMonth.setSelectedIndex(0);
+			cbDay.setSelectedIndex(0);
 
 			//전송하기 버튼으로 변경
 			sendCertifiFlagId = 1;
@@ -573,6 +573,10 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			btnSendId.setRolloverIcon(new ImageIcon("images/join/Btn_Send_Rollover.png"));
 			btnSendId.setPressedIcon(new ImageIcon("images/join/Btn_Send_Pressed.png"));
 			btnSendId.setEnabled(false);	//전송하기 버튼 비활성화
+			
+			btnIdFind.setEnabled(false);	//아이디 찾기 버튼 비활성화
+			
+			certifiFlagId = false;	//인증 완료 상태 변경
 			
 			JOptionPane.showMessageDialog(this, "입력하신 정보와 일치하는 아이디가 없습니다.", "아이디 찾기 실패", JOptionPane.ERROR_MESSAGE);
 			tfNameId.requestFocus();
@@ -585,13 +589,17 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			
 			//전송하기 버튼으로 변경
 			sendCertifiFlagPw = 1;
-			btnSendId.setIcon(new ImageIcon("images/join/Btn_Send_EnabledTrue.png"));
-			btnSendId.setRolloverIcon(new ImageIcon("images/join/Btn_Send_Rollover.png"));
-			btnSendId.setPressedIcon(new ImageIcon("images/join/Btn_Send_Pressed.png"));
-			btnSendId.setEnabled(false);	//전송하기 버튼 비활성화
+			btnSendPw.setIcon(new ImageIcon("images/join/Btn_Send_EnabledTrue.png"));
+			btnSendPw.setRolloverIcon(new ImageIcon("images/join/Btn_Send_Rollover.png"));
+			btnSendPw.setPressedIcon(new ImageIcon("images/join/Btn_Send_Pressed.png"));
+			btnSendPw.setEnabled(false);	//전송하기 버튼 비활성화
+			
+			btnPwFind.setEnabled(false);	//비밀번호 찾기 버튼 비활성화
+			
+			certifiFlagPw = false;	//인증 완료 상태 변경
 			
 			JOptionPane.showMessageDialog(this, "입력하신 정보와 일치하는 아이디가 없습니다.", "아이디 찾기 실패", JOptionPane.ERROR_MESSAGE);
-			tfNameId.requestFocus();
+			tfIdPw.requestFocus();
 			
 			System.out.println("아이디 찾기 실패");
 		}
@@ -656,6 +664,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 	@Override
 	public void run() {
 		if(idPwFlag == 1) {
+			System.out.println("ID Thread");
 			try {
 				while(!Thread.interrupted()) {
 					if(min >= 0) {
@@ -673,6 +682,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 				System.out.println("Thread 종료");
 			}
 		} else if(idPwFlag == 2) {
+			System.out.println("PW Thread");
 			try {
 				while(!Thread.interrupted()) {
 					if(min >= 0) {
@@ -739,8 +749,6 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 				tfCertifiNumId.setEnabled(false);	//인증번호 텍스트필드 비활성화
 				btnSendId.setEnabled(false);		//인증하기 버튼 비활성화
 				
-				certifiFlag  = true;
-				
 				idFindBtnChk();
 			} else {
 				JOptionPane.showMessageDialog(this, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
@@ -775,6 +783,8 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			
 			if(Validation.nameValidation(usersInName) && Validation.birthdayValidation(usersInBirthday) && Validation.phonNumValidation(usersInPhoneNum)) {
 				
+				DB.init();	//DB 연결
+				
 				ResultSet rs = DB.getResult("select * from USERS WHERE USERSNAME = '" + usersInName + "' and USERSBIRTHDAY = '" + usersInBirthday + "' and USERSPHONNUM = '" + usersInPhoneNum + "'");
 				
 				try {
@@ -793,6 +803,8 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 					System.out.println("예외발생 : DB 조회에 실패했습니다.");
 					errorHandling();
 					e1.printStackTrace();
+				} finally {
+					DB.closeDB(DB.conn, DB.stmt);	//DB 연결 종료
 				}
 			} else {
 				errorHandling();
@@ -834,7 +846,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 				tfCertifiNumPw.setEnabled(false);	//인증번호 텍스트필드 비활성화
 				btnSendPw.setEnabled(false);		//인증하기 버튼 비활성화
 				
-				certifiFlag  = true;
+				certifiFlagPw  = true;
 				
 				pwFindBtnChk();
 			} else {
@@ -860,6 +872,8 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			
 			if(Validation.idValidation(usersInId) && Validation.phonNumValidation(usersInPhoneNum)) {
 				
+				DB.init();	//DB 연결
+				
 				ResultSet rs = DB.getResult("select * from USERS WHERE USERSID = '" + usersInId + "' and USERSPHONNUM = '" + usersInPhoneNum + "'");
 				
 				try {
@@ -878,6 +892,8 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 					System.out.println("예외발생 : DB 조회에 실패했습니다.");
 					errorHandling();
 					e1.printStackTrace();
+				} finally {
+					DB.closeDB(DB.conn, DB.stmt);	//DB 연결 종료
 				}
 			} else {
 				errorHandling();
@@ -890,8 +906,12 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 					String pwSalt = Encryption.Salt();	//SHA512 암호화에 사용할 난수 생성
 					usersInPw = Encryption.SHA512(usersInPw, pwSalt);	//입력받은 비밀번호를 Salt 값으로 SHA512 암호화
 					
+					DB.init();	//DB 연결
+					
 					String sqlUpdate = "UPDATE USERS SET USERSPW = '" + usersInPw + "', USERSPWSALT = '" + pwSalt + "' where USERSID = '" + usersInId + "'";	//회원정보 Insert문 생성
 					DB.executeSQL(sqlUpdate);	//DB로 Update문 전송
+					
+					DB.closeDB(DB.conn, DB.stmt);	//DB 연결 종료
 					
 					JOptionPane.showMessageDialog(this, "비밀번호 변경이 완료되었습니다.", "비밀번호 변경 완료", JOptionPane.PLAIN_MESSAGE);
 					
@@ -927,6 +947,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			//아이디 찾기 휴대폰번호 텍스트필드 PlaceHolder
 			if(tfPhonNumId.getText().equals("  휴대폰번호('-'제외)")) {
 				clearPH(tfPhonNumId);	//PlaceHolder 초기화
+				idPwFlag = 1;
 			}
 		} else if(obj == tfCertifiNumId) {
 			//아이디 찾기 인증번호 텍스트필드 PlaceHolder
@@ -942,6 +963,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			//비밀번호 찾기 휴대폰번호 텍스트필드 PlaceHolder
 			if(tfPhonNumPw.getText().equals("  휴대폰번호('-'제외)")) {
 				clearPH(tfPhonNumPw);	//PlaceHolder 초기화
+				idPwFlag = 2;
 			}
 		} else if(obj == tfCertifiNumPw) {
 			//비밀번호 찾기 인증번호 텍스트필드 PlaceHolder
@@ -1024,7 +1046,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		
-		if(!tfPhonNumId.getText().equals("  휴대폰번호('-'제외)") && sendCertifiFlagId == 1 && !certifiFlag) {
+		if(!tfPhonNumId.getText().equals("  휴대폰번호('-'제외)") && sendCertifiFlagId == 1 && !certifiFlagId && idPwFlag == 1) {
 			if(Validation.phonNumValidation(tfPhonNumId.getText())) {	//아이디 찾기 전송하기 버튼 활성화 조건 검사
 				btnSendId.setEnabled(true);	//아이디 찾기 전송하기 버튼 활성화
 			} else {
@@ -1032,7 +1054,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			}
 		}
 		
-		if(!tfCertifiNumId.getText().equals("  인증번호") && sendCertifiFlagId == 2 && !certifiFlag) {
+		if(!tfCertifiNumId.getText().equals("  인증번호") && sendCertifiFlagId == 2 && !certifiFlagId && idPwFlag == 1) {
 			if(Validation.certifiNumValidation(tfCertifiNumId.getText())) {	//아이디 찾기 인증하기 버튼 활성화 조건 검사
 				btnSendId.setEnabled(true);	//아이디 찾기 인증하기 버튼 활성화
 			} else {
@@ -1040,7 +1062,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			}
 		}
 		
-		if(!tfPhonNumPw.getText().equals("  휴대폰번호('-'제외)") && sendCertifiFlagPw == 1 && !certifiFlag) {
+		if(!tfPhonNumPw.getText().equals("  휴대폰번호('-'제외)") && sendCertifiFlagPw == 1 && !certifiFlagPw && idPwFlag == 2) {
 			if(Validation.phonNumValidation(tfPhonNumPw.getText())) {	//비밀번호 찾기 전송하기 버튼 활성화 조건 검사
 				btnSendPw.setEnabled(true);	//비밀번호 찾기 전송하기 버튼 활성화
 			} else {
@@ -1048,7 +1070,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			}
 		}
 		
-		if(!tfPhonNumPw.getText().equals("  인증번호") && sendCertifiFlagPw == 2 && !certifiFlag) {
+		if(!tfPhonNumPw.getText().equals("  인증번호") && sendCertifiFlagPw == 2 && !certifiFlagPw && idPwFlag == 2) {
 			if(Validation.certifiNumValidation(tfCertifiNumPw.getText())) {	//비밀번호 찾기 인증하기 버튼 활성화 조건 검사
 				btnSendPw.setEnabled(true);	//비밀번호 찾기 인증하기 버튼 활성화
 			} else {
@@ -1056,7 +1078,7 @@ public class FindFrame extends JFrame implements ActionListener, FocusListener, 
 			}
 		}
 		
-		if(!tfNewPwPw.getText().equals("  새 비밀번호") && !tfNewPw2Pw.getText().equals("  새 비밀번호 확인")) {
+		if(!tfNewPwPw.getText().equals("  새 비밀번호") && !tfNewPw2Pw.getText().equals("  새 비밀번호 확인") && idPwFlag == 2) {
 			if(Validation.pwValidation(tfNewPwPw.getText()) && Validation.pwValidation(tfNewPw2Pw.getText())) {
 				btnPwChange.setEnabled(true);
 			} else {

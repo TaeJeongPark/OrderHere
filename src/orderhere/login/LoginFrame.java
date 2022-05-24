@@ -91,7 +91,6 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
         makeLogo();		//로고 영역 생성
         makeInput();	//인풋필드 영역 생성
         makeInfo();		//안내정보 영역 생성
-        DB.init();		//DB 연결
 
         add(pnBackground, BorderLayout.CENTER);
         
@@ -234,16 +233,48 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 	//로그인 에러 핸들링
 	private void errorHandling() {
 		
-		tfId.setText("  아이디");
-		tfId.setForeground(Color.GRAY);
-		tfPw.setText("  비밀번호");
-		tfPw.setEchoChar((char)0);	//작성되는 문자 그대로 보여지게 설정
-		tfPw.setForeground(Color.GRAY);
+		setPH(tfId);
+		setPwPH(tfPw);
 		btnLogin.setEnabled(false);
 		lblError.setText("아이디 혹은 비밀번호가 일치하지 않습니다.");
 		tfId.requestFocus();
 		
 		System.out.println("로그인 실패");
+		
+	}
+	
+	//JTextField PlaceHolder 초기화 함수
+	private void clearPH(JTextField tf) {
+		
+		tf.setText("");
+		tf.setForeground(Color.BLACK);
+		
+	}
+	
+	//JTextField PlaceHolder 세팅 함수
+	private void setPH(JTextField tf) {
+
+		tf.setEnabled(true);
+		tf.setText("  아이디");
+		tf.setForeground(Color.GRAY);
+		
+	}
+	
+	//JPasswordField PlaceHolder 초기화 함수
+	private void clearPwPH(JPasswordField tf) {
+		
+		tf.setEchoChar('●');	//작성되는 문자 '●'로 변환 설정
+		tf.setText("");
+		tf.setForeground(Color.BLACK);
+		
+	}
+	
+	//JPasswordField PlaceHolder 세팅 함수
+	private void setPwPH(JPasswordField tf) {
+		
+		tf.setEchoChar((char)0);	//작성되는 문자 그대로 보여지게 설정
+		tf.setText("  비밀번호");
+		tf.setForeground(Color.GRAY);
 		
 	}
 
@@ -262,6 +293,8 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 					usersInId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장 
 					usersInPw = tfPw.getText();	//사용자가 비밀번호 텍스트필드에 입력한 데이터 저장
 					
+					DB.init();	//DB 연결
+					
 					ResultSet rs = DB.getResult("select * from USERS WHERE USERSID = '" + usersInId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
 					
 					try {
@@ -276,6 +309,12 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 							
 							if(usersId.equals(usersInId) && usersPw.equals(usersInPw)) {
 								System.out.println("로그인 성공");
+								
+								setPH(tfId);				//PlaceHolder 세팅
+								setPwPH(tfPw);				//PlaceHolder 세팅
+								btnLogin.setEnabled(false);	//로그인 버튼 비활성화
+								
+								//메인 화면으로 이동
 							} else {
 								errorHandling();
 							}
@@ -286,6 +325,8 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 						System.out.println("예외발생 : DB 조회에 실패했습니다.");
 						errorHandling();
 						e1.printStackTrace();
+					} finally {
+						DB.closeDB(DB.conn, DB.stmt);	//DB 연결 종료
 					}
 				} else {
 					errorHandling();
@@ -305,15 +346,12 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		if(obj == tfId) {
 			//아이디 텍스트필드 PlaceHolder
 			if(tfId.getText().equals("  아이디")) {
-				tfId.setText("");
-				tfId.setForeground(Color.BLACK);
+				clearPH(tfId);	//PlaceHolder 초기화
 			}
 		} else if(obj == tfPw) {
 			//비밀번호 텍스트필드 PlaceHolder
 			if(tfPw.getText().equals("  비밀번호")) {
-				tfPw.setEchoChar('●');	//작성되는 문자 '●'로 변환 설정
-				tfPw.setText("");
-				tfPw.setForeground(Color.BLACK);
+				clearPwPH(tfPw);	//PlaceHolder 초기화
 			}
 		}
 		
@@ -327,15 +365,12 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		if(obj == tfId) {
 			//아이디 텍스트필드 PlaceHolder
 			if(tfId.getText().isEmpty()) {
-				tfId.setText("  아이디");
-				tfId.setForeground(Color.GRAY);
+				setPH(tfId);	//PlaceHolder 세팅
 			}
 		} else if(obj == tfPw) {
 			//비밀번호 텍스트필드 PlaceHolder
 			if(tfPw.getText().isEmpty()) {
-				tfPw.setText("  비밀번호");
-				tfPw.setEchoChar((char)0);	//작성되는 문자 그대로 보여지게 설정
-				tfPw.setForeground(Color.GRAY);
+				setPwPH(tfPw);	//PlaceHolder 세팅
 			}
 		}
 		
@@ -413,7 +448,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 	@Override
 	public void mouseExited(MouseEvent e) {
 
-Object obj = e.getSource();
+		Object obj = e.getSource();
 		
 		if(obj == btnLblJoin) {
 			btnLblJoin.setForeground(Color.BLACK);
