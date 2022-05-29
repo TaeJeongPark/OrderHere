@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -27,9 +28,11 @@ import orderhere.order.CommonPanel;
 import orderhere.order.Test;
 import orderhere.order.cart.CartData;
 import orderhere.order.db.DB;
+import orderhere.order.orderdetails.OrderDetails;
 
 public class Payment extends JFrame implements ActionListener, MouseListener{
 	
+		private int cartid = 1;
 		private String usersid;
 		private int storeid;
 		private String storeAddress;
@@ -48,6 +51,7 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 		private JTextField tfPoint;
 		private JButton btnOrder;
 		private int cartnum;
+		private int inputPoint;
 		
 		public Payment(CartData cd) 
 		{
@@ -69,9 +73,8 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			setLayout(null);
 			
-			add(new CommonPanel().createTop("PAYMENT"));
+			add(new CommonPanel().createTop("Payment"));
 			createBody();
-			
 			
 			setVisible(true);
 		}
@@ -238,8 +241,8 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 			
 			try {
 				rs = DB.getResult("select point from userspoint where usersid='"+usersid+"' order by pointid desc");
-				rs.next();
-				iUsersPoint = rs.getInt(1);
+				if(rs.next()) iUsersPoint = rs.getInt(1);
+				else iUsersPoint = 0;
 				rs.close();
 			} catch (SQLException e) {
 				System.out.println("포인트: 조회된 데이터가 없습니다.");
@@ -252,7 +255,7 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource()==btnApply) 
 			{
-				int inputPoint = 0;
+				inputPoint = 0;
 				try{
 					inputPoint = Integer.parseInt(tfPoint.getText());
 				}catch(NumberFormatException e1) 
@@ -261,10 +264,12 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 					tfPoint.setText("");
 					iToPay =  iSumPrice;
 					lblDToPay.setText(CommonPanel.toAddCommaAtPrice(iToPay)+" 원");
+					inputPoint = 0;
 					return;
 				}catch(Exception e3) 
 				{
 					JOptionPane.showMessageDialog(null, "숫자만 입력해주세요", "오류", JOptionPane.ERROR_MESSAGE);
+					inputPoint = 0;
 					return;
 				}
 				if(inputPoint>iUsersPoint) 
@@ -273,6 +278,7 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 					tfPoint.setText("");
 					iToPay =  iSumPrice;
 					lblDToPay.setText(CommonPanel.toAddCommaAtPrice(iToPay)+" 원");
+					inputPoint = 0;
 					return;
 				}
 				if(inputPoint<1000) 
@@ -281,6 +287,7 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 					tfPoint.setText("");
 					iToPay =  iSumPrice;
 					lblDToPay.setText(CommonPanel.toAddCommaAtPrice(iToPay)+" 원");
+					inputPoint = 0;
 					return;
 				}
 				iToPay =  iSumPrice - inputPoint;
@@ -292,9 +299,80 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 				lblDToPay.setText(CommonPanel.toAddCommaAtPrice(iToPay)+" 원");
 			}else if(e.getSource()==btnOrder) 
 			{
-				
+				if(iUsersCash<iToPay) 
+				{
+					JOptionPane.showMessageDialog(null, "캐시가 부족합니다", "캐시가 부족합니다", JOptionPane.ERROR_MESSAGE);
+				}else if(iUsersCash>=iToPay) 
+				{
+					pay();
+					Test.setActivatedFrame(new OrderDetails());
+					this.dispose();
+				}
 			}
 				
+		}
+
+
+		private void pay() {
+			
+			ResultSet rs = null;
+			
+			DB.executeSQL("update users set usersCash="+(iUsersCash-iToPay)+" where usersid='"+usersid+"'");
+			
+			int pointid = 0;
+			try {
+				rs = DB.getResult("select max(pointid) from userspoint");
+				if(rs.next()) pointid = rs.getInt(1)+1;
+				else pointid = 1;
+				rs.close();
+			} catch (SQLException e) {
+				System.out.println("포인트 최대 값: 조회된 데이터가 없습니다.");
+				e.printStackTrace();
+			}
+			
+			String orderdate = "";
+			try {
+				rs = DB.getResult("select to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') from Dual");
+				rs.next();
+				orderdate = rs.getString(1);
+				rs.close();
+			} catch (SQLException e) {
+				System.out.println("날짜: 조회된 데이터가 없습니다.");
+				e.printStackTrace();
+			}
+			
+			int iGotPoint = (int)(Math.round(iToPay*0.01));
+			int iChangedUsersPoint = iUsersPoint+iGotPoint;
+			DB.executeSQL("insert into userspoint(usersid,pointid,orderdate,pointstatus,pointvalue,point) values ('"+
+						usersid+"',"+pointid+",'"+orderdate+"','적립',"+iGotPoint+","+iChangedUsersPoint+")");
+			
+			if(inputPoint>0) 
+			{
+				iChangedUsersPoint = (iUsersPoint+iGotPoint)-inputPoint;
+				DB.executeSQL("insert into userspoint(usersid,pointid,orderdate,pointstatus,pointvalue,point) values ("+
+						usersid+","+(pointid+1)+","+orderdate+",'차감',"+inputPoint+","+iChangedUsersPoint+")");
+			}
+			
+			int orderid = 0;
+			try {
+				rs = DB.getResult("select orderid from orders order by orderid desc");
+				if(rs.next()) orderid = rs.getInt(1)+1;
+				else orderid = 1;
+				rs.close();
+			} catch (SQLException e) {
+				System.out.println("주문번호: 조회된 데이터가 없습니다.");
+				e.printStackTrace();
+			}
+			DB.executeSQL("insert into orders(orderid,usersid,storeid,cartid,orderdate,orderusagepoint,orderusagecash,ordersum) values ("+
+						orderid+",'"+usersid+"',"+storeid+","+cartid+",'"+orderdate+"',"+inputPoint+","+iToPay+","+iSumPrice+")");
+			
+			try {
+				DB.conn.commit();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+			
 		}
 
 
