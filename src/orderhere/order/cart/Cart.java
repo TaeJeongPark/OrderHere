@@ -35,10 +35,15 @@ import com.raven.event.EventTimePicker;
 import com.raven.swing.TimePicker;
 
 import orderhere.order.CommonPanel;
+import orderhere.order.Test;
 import orderhere.order.db.DB;
+import orderhere.order.payment.Payment;
 
 public class Cart extends JFrame implements ActionListener, EventTimePicker, ItemListener, MouseListener{
 	
+		private String usersid = "aa1234";
+		private int storeid = 1;
+		
 		private TimePicker tp;
 		private JPanel p_body;
 		private JLabel lblReservedTime;
@@ -72,6 +77,14 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 		private ImageIcon iconpayEnabledFalse;
 		private ImageIcon icondelEnabledFalse;
 		private ImageIcon icondelallEnabledFalse;
+
+		private String menuname;
+		private String option;
+		private String menucartquantity;
+		private String menuprice;
+		private CartData cd;
+		private int iIsReserved=0;
+		
 		public Cart() 
 		{
 			getDataFromDB();
@@ -210,7 +223,7 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 			cartpanel.setLayout(null);
 			
 			//장바구니 담은 갯수별 ui레이아웃 조정
-			if(cartnum>2) cartpanel.setPreferredSize(new Dimension(800, 140*cartnum));
+			if(cartnum>=3) cartpanel.setPreferredSize(new Dimension(800, 140*cartnum));
 			else if(cartnum>=0&&cartnum<3) cartpanel.setPreferredSize(new Dimension(800, 140*3));
 			
 			jsp = new JScrollPane(cartpanel, 
@@ -237,6 +250,7 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 			cmps = new CartMenuPanel[cartnum];
 			ckb = new JCheckBox[cartnum];
 			
+			cd = new CartData(cartnum);
 			//CartMenuPanel 패널 배열에 db데이터 추가 및 
 			//CartMenuPanel 패널 위치 조정, CartMenuPanel 패널을 cartpanel에 추가하는 코드
 			for (int i = 0; i < cartnum; i++) {
@@ -245,15 +259,20 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 				ImageIcon mi = new ImageIcon("images/menu/cart/"+
 											cdbdata[i].getMenucategory()+
 											"/"+cdbdata[i].getMenuimage());
-				String menuname = cdbdata[i].getMenuname();
-				String option = cdbdata[i].getOptionStatus()+" / "+
+				menuname = cdbdata[i].getMenuname();
+				option = cdbdata[i].getOptionStatus()+" / "+
 						cdbdata[i].getOptionPacking()+" / "+
 						cdbdata[i].getOptionSize()+" / "+
-						cdbdata[i].getOptionSyrup()+" /x"+
+						cdbdata[i].getOptionSyrup()+" / x"+
 						cdbdata[i].getOpionSyrupNum()+" / "+
 						cdbdata[i].getOptionWhippedcream();
-				String menucartquantity = "수량    "+"x "+cdbdata[i].getOptionQuantity();
-				String menuprice = "가격    "+CommonPanel.toAddCommaAtPrice(cdbdata[i].getMenuprice()*cdbdata[i].getOptionQuantity())+" 원";
+				menucartquantity = "수량    "+"x "+cdbdata[i].getOptionQuantity();
+				menuprice = "가격    "+CommonPanel.toAddCommaAtPrice(cdbdata[i].getMenuprice()*cdbdata[i].getOptionQuantity())+" 원";
+				
+				//결제 화면에 보내질 데이터
+				cd.setData(i,menuname,option,"x "+cdbdata[i].getOptionQuantity(),
+						CommonPanel.toAddCommaAtPrice(cdbdata[i].getMenuprice()*cdbdata[i].getOptionQuantity())+" 원");
+				
 				
 				cmps[i].setImenuid(cdbdata[i].getMenuid());
 				cmps[i].getLblMenuImage().setIcon(mi);
@@ -271,6 +290,8 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 				ckb[i].setLocation(608-25-7, 7);
 				ckb[i].addItemListener(this);
 				cmps[i].add(ckb[i]);
+				
+				
 				
 				cartpanel.add(cmps[i]);
 			}
@@ -345,12 +366,14 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 			if(e.getSource()==btn_reserve) {
 				if(cartnum !=0) {
 					if(btn_reserve.getIcon()==iconreservePressed) {
+						iIsReserved = 1;
 						tp.showPopup(this, 1050-220, 0);	
 						lblReservedTime.setText("예약 시간: "+tp.getSelectedTime());
 						lblReservedTime.setForeground(Color.RED);
 						lblReservedTime.setLocation(41+608+19+108,118);
 						btn_reserve.setIcon(iconreservecancelPressed);
 					}else if(btn_reserve.getIcon()==iconreservecancelPressed) {
+						iIsReserved = 0;
 						lblReservedTime.setText("예약 시간을 선택해주세요.");
 						lblReservedTime.setForeground(Color.BLACK);
 						lblReservedTime.setSize(258,26);
@@ -368,7 +391,7 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 				int c = JOptionPane.showConfirmDialog(null, "전부 삭제하시겠습니까?", "전체삭제", JOptionPane.YES_NO_OPTION);
 				if(c==JOptionPane.YES_OPTION) 
 				{
-					db.deleteCartAll("jj1234");
+					db.deleteCartAll(usersid);
 					getDataFromDB();
 					reLoad();
 				}else if(c==JOptionPane.NO_OPTION) System.out.println("취소");
@@ -376,10 +399,23 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 			}else if (e.getSource()==btn_del) 
 			{
 				for (int i = 0; i < cartnum; i++) {
-					if(ckb[i].isSelected()==true) db.deleteCart("jj1234", cmps[i].getImenuid());
+					if(ckb[i].isSelected()==true) db.deleteCart(usersid, cmps[i].getImenuid());
 				}
 				getDataFromDB();
 				reLoad();
+			}else if(e.getSource()==btn_pay) 
+			{
+				if(iIsReserved==1) cd.setsReservedTime(tp.getSelectedTime());
+				else if(iIsReserved==0) cd.setsReservedTime("미예약");
+				
+				cd.setUsersid(usersid);
+				cd.setStoreid(storeid);
+				cd.setiSumPrice(sumPrice);
+				cd.setiIsReserved(iIsReserved);
+				
+				Test.setActivatedFrame(new Payment(cd));
+			
+				this.dispose();
 			}
 		}
 

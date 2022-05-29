@@ -12,6 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import orderhere.order.cart.Cart;
+
 public class CommonPanel extends JFrame implements MouseListener{
 	private static JPanel p_top;
 	private static JLabel btnback;
@@ -22,9 +24,11 @@ public class CommonPanel extends JFrame implements MouseListener{
 	private static ImageIcon iiconbtnbackEnabledTrue;
 	private static ImageIcon iiconbtnbackRollover;
 	private static ImageIcon iiconbtnbackPressed;
+	private String title;
 	
 	public JPanel createTop(String title) 
 	{
+		this.title = title;
 		//최상위 컴포넌트
 		p_top = new JPanel();
 		p_top.setSize(1050, 158);
@@ -138,6 +142,11 @@ public class CommonPanel extends JFrame implements MouseListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		btnback.setIcon(iiconbtnbackPressed);
+		if(this.title.equals("PAYMENT")) 
+		{
+			Test.getActivatedFrame().dispose();
+			Test.setActivatedFrame(new Cart());
+		}
 		
 	}
 

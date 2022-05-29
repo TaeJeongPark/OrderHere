@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import orderhere.order.db.DB;
 
 public class CartDB {
+	
+	private String usersid = "aa1234";
 	private int cartnum;
 	private CartDBData[] cdbdata;
 	private ResultSet rs;
@@ -17,7 +19,7 @@ public class CartDB {
 		DB.init();
 		//장바구니에 담은 메뉴 갯수
 		//ResultSet rs = DB.getResult("select menuid from cart where usersid='jj234'");
-		rs = DB.getResult("select count(*) from cart where usersid='jj1234'");
+		rs = DB.getResult("select count(*) from cart where usersid='"+usersid+"'");
 		try {
 			if(rs.next()) 
 			{
@@ -31,7 +33,7 @@ public class CartDB {
 		
 		cdbdata = new CartDBData[cartnum];
 		//메뉴 정보 받아옴.
-		rsCart = DB.getResult("select menuid from cart where usersid='jj1234' ORDER BY cartid asc");
+		rsCart = DB.getResult("select menuid from cart where usersid='"+usersid+"' ORDER BY cartid asc");
 		try {
 			for (int i = 0; i < cartnum; i++) {
 				cdbdata[i] = new CartDBData();
@@ -52,7 +54,7 @@ public class CartDB {
 		}
 		
 		//옵션 정보 받아옴
-		rsCart = DB.getResult("select * from cart where usersid='jj1234' ORDER BY cartid asc");
+		rsCart = DB.getResult("select * from cart where usersid='"+usersid+"' ORDER BY cartid asc");
 		try {
 			for (int i = 0; i < cartnum; i++) {
 								
