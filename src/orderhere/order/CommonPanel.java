@@ -77,7 +77,7 @@ public class CommonPanel extends JFrame implements MouseListener{
 	
 	public static int getTitleW(String title) {
 		int[] fontsizex = {108,260,286,216,333};//cart,orderlist,pointusage,payment,orderdetail
-		String[] fontTitle = {"Cart","ORDER LIST","POINT USAGE","PAYMENT","ORDER DETAILS"};
+		String[] fontTitle = {"Cart","ORDER LIST","POINT USAGE","Payment","ORDER DETAILS"};
 		if(title.equals(fontTitle[0])) return fontsizex[0];
 		else if(title.equals(fontTitle[1])) return fontsizex[1];
 		else if(title.equals(fontTitle[2])) return fontsizex[2];
@@ -88,7 +88,7 @@ public class CommonPanel extends JFrame implements MouseListener{
 	
 	public static int getTitleH(String title) {
 		int[] fontsizey = {38,50,55,48,50};
-		String[] fontTitle = {"Cart","ORDER LIST","POINT USAGE","PAYMENT","ORDER DETAILS"};
+		String[] fontTitle = {"Cart","ORDER LIST","POINT USAGE","Payment","ORDER DETAILS"};
 		if(title.equals(fontTitle[0])) return fontsizey[0];
 		else if(title.equals(fontTitle[1])) return fontsizey[1];
 		else if(title.equals(fontTitle[2])) return fontsizey[2];
@@ -108,6 +108,7 @@ public class CommonPanel extends JFrame implements MouseListener{
 	public static String toAddCommaAtPrice(int price) {
 		/*  First Writed By SonhYunHa, Inha Technical College grade 2, Korea 
 		 * Writed in 2022.05.22 */
+		if(price==0) return 0+"";
 		
 		String str="";
 		int iOriginSum = price;
@@ -142,7 +143,7 @@ public class CommonPanel extends JFrame implements MouseListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		btnback.setIcon(iiconbtnbackPressed);
-		if(this.title.equals("PAYMENT")) 
+		if(this.title.equals("Payment")) 
 		{
 			Test.getActivatedFrame().dispose();
 			Test.setActivatedFrame(new Cart());
