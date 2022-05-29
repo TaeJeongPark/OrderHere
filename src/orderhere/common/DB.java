@@ -37,7 +37,7 @@ public class DB {
 			
 			stmt = conn.createStatement();
 			
-			System.out.println("DB연결 성공");
+			System.out.println("DB 연결 성공");
 		} catch (ClassNotFoundException e) {
 			System.out.println("예외 발생 : 해당 드라이버가 없습니다.");
 			e.printStackTrace();

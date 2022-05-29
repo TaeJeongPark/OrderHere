@@ -16,6 +16,7 @@ import java.util.Base64;
 * DATE				AUTHOR				NOTE
 * -----------------------------------------------------------
 * 2022.05.21		TaeJeong Park		최초 생성
+* 2022.05.21		TaeJeong Park		기능 구현 완료
 */
 public class Encryption {
 

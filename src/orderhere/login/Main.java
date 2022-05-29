@@ -16,7 +16,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		LoginFrame mf = new LoginFrame("Login");
+		LoginFrame lf = new LoginFrame("Login");
 		
 	}
 
