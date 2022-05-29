@@ -108,7 +108,7 @@ public class CommonPanel extends JFrame implements MouseListener{
 	public static String toAddCommaAtPrice(int price) {
 		/*  First Writed By SonhYunHa, Inha Technical College grade 2, Korea 
 		 * Writed in 2022.05.22 */
-		if(price==0) return 0+"";
+		if(price<1000&&price>=0) return price+"";
 		
 		String str="";
 		int iOriginSum = price;
