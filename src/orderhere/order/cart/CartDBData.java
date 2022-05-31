@@ -2,6 +2,7 @@ package orderhere.order.cart;
 
 public class CartDBData {
 	
+	private int cartid;
 	private int menuid;
 	private String menuname;
 	private String menuimage;
@@ -14,7 +15,15 @@ public class CartDBData {
 	private String optionSyrup;
 	private int opionSyrupNum;
 	private String optionWhippedcream;
+	private int cartidisSameCart;
 	
+
+	public int getCartid() {
+		return cartid;
+	}
+	public void setCartid(int cartid) {
+		this.cartid = cartid;
+	}
 	public int getMenuid() {
 		return menuid;
 	}
@@ -86,6 +95,12 @@ public class CartDBData {
 	}
 	public void setOptionWhippedcream(String optionWhippedcream) {
 		this.optionWhippedcream = optionWhippedcream;
+	}
+	public int getCaridisSameCart() {
+		return cartidisSameCart;
+	}
+	public void setCaridisSameCart(int caridisSameCart) {
+		this.cartidisSameCart = caridisSameCart;
 	}
 	
 }

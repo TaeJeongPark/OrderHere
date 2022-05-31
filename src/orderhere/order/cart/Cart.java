@@ -35,11 +35,12 @@ import com.raven.event.EventTimePicker;
 import com.raven.swing.TimePicker;
 
 import orderhere.order.CommonPanel;
-import orderhere.order.Test;
+import orderhere.order.Main;
+import orderhere.order.MainFrame;
 import orderhere.order.db.DB;
 import orderhere.order.payment.Payment;
 
-public class Cart extends JFrame implements ActionListener, EventTimePicker, ItemListener, MouseListener{
+public class Cart extends JPanel implements ActionListener, EventTimePicker, ItemListener, MouseListener{
 	
 		private String usersid = "aa1234";
 		private int storeid = 1;
@@ -89,15 +90,13 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 		{
 			getDataFromDB();
 			
-			setSize(1050,789);
-			setLocation(100,0);//화면 가운데 배치 필요
-			setDefaultCloseOperation(EXIT_ON_CLOSE);
+			setSize(1050,750);
+			setLocation(0,0);//화면 가운데 배치 필요
 			setLayout(null);
 			
 			add(new CommonPanel().createTop("Cart"));
 			createBody();
 			
-			setVisible(true);
 		}
 
 		private void createBody() {
@@ -270,9 +269,9 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 				menuprice = "가격    "+CommonPanel.toAddCommaAtPrice(cdbdata[i].getMenuprice()*cdbdata[i].getOptionQuantity())+" 원";
 				
 				//결제 화면에 보내질 데이터
-				cd.setData(i,menuname,option,"x "+cdbdata[i].getOptionQuantity(),
-						CommonPanel.toAddCommaAtPrice(cdbdata[i].getMenuprice()*cdbdata[i].getOptionQuantity())+" 원");
-				
+				cd.setData(i,cdbdata[i].getCartid(),menuname,option,"x "+cdbdata[i].getOptionQuantity(),
+						CommonPanel.toAddCommaAtPrice(cdbdata[i].getMenuprice()*cdbdata[i].getOptionQuantity())+" 원",
+						cdbdata[i].getCaridisSameCart());
 				
 				cmps[i].setImenuid(cdbdata[i].getMenuid());
 				cmps[i].getLblMenuImage().setIcon(mi);
@@ -368,9 +367,10 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 					if(btn_reserve.getIcon()==iconreservePressed) {
 						iIsReserved = 1;
 						tp.showPopup(this, 1050-220, 0);	
-						lblReservedTime.setText("예약 시간: "+tp.getSelectedTime());
+						lblReservedTime.setText(CommonPanel.transformTimeFormat( tp.getSelectedTime())+" 예약");
 						lblReservedTime.setForeground(Color.RED);
-						lblReservedTime.setLocation(41+608+19+108,118);
+						lblReservedTime.setLocation(41+608+19+108+25,118);
+						lblReservedTime.setFont(new Font("맑은 고딕", Font.PLAIN, 22));
 						btn_reserve.setIcon(iconreservecancelPressed);
 					}else if(btn_reserve.getIcon()==iconreservecancelPressed) {
 						iIsReserved = 0;
@@ -378,6 +378,7 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 						lblReservedTime.setForeground(Color.BLACK);
 						lblReservedTime.setSize(258,26);
 						lblReservedTime.setLocation(41+608+19+100,118);
+						lblReservedTime.setFont(new Font("맑은 고딕", Font.PLAIN, 18));
 						btn_reserve.setIcon(iconreservePressed);
 					}
 				}else if(cartnum==0) 
@@ -405,7 +406,7 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 				reLoad();
 			}else if(e.getSource()==btn_pay) 
 			{
-				if(iIsReserved==1) cd.setsReservedTime(tp.getSelectedTime());
+				if(iIsReserved==1) cd.setsReservedTime(CommonPanel.transformTimeFormat(tp.getSelectedTime()));
 				else if(iIsReserved==0) cd.setsReservedTime("미예약");
 				
 				cd.setUsersid(usersid);
@@ -413,10 +414,21 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 				cd.setiSumPrice(sumPrice);
 				cd.setiIsReserved(iIsReserved);
 				
-				Test.setActivatedFrame(new Payment(cd));
+				CommonPanel.redraw(new Payment(cd));
+
+//				Main.setActivatedFrame(new Payment(cd));
 			
-				this.dispose();
 			}
+		}
+
+
+		private void redraw(JPanel panel) {
+			Main.getMf().remove(Main.getMf().getCurrentPanel());
+			Main.getMf().setCurrentPanel(panel);
+			Main.getMf().add(Main.getMf().getCurrentPanel());
+			Main.getMf().setVisible(false);
+			Main.getMf().setVisible(true);
+			
 		}
 
 		private void reLoad() {
@@ -449,10 +461,11 @@ public class Cart extends JFrame implements ActionListener, EventTimePicker, Ite
 			iTimeSelectedNum++;
 			if(iTimeSelectedNum==1) return;
 			
-			lblReservedTime.setText("예약 시간: "+tp.getSelectedTime());
+			lblReservedTime.setText(CommonPanel.transformTimeFormat( tp.getSelectedTime())+" 예약");
 			lblReservedTime.setForeground(Color.RED);
 			//lblReservedTime.setSize(158,26);
-			lblReservedTime.setLocation(41+608+19+108,118);
+			lblReservedTime.setLocation(41+608+19+108+25,118);
+			lblReservedTime.setFont(new Font("맑은 고딕", Font.PLAIN, 22));
 		}
 		
 		@Override

@@ -2,11 +2,16 @@ package orderhere.order.cart;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 
 import orderhere.order.db.DB;
 
 public class CartDB {
 	
+	private int cartidIsSameCart = 8;
+	
+	private int cartid[];
+
 	private String usersid = "aa1234";
 	private int cartnum;
 	private CartDBData[] cdbdata;
@@ -17,9 +22,9 @@ public class CartDB {
 	public CartDB() 
 	{
 		DB.init();
+		
 		//장바구니에 담은 메뉴 갯수
-		//ResultSet rs = DB.getResult("select menuid from cart where usersid='jj234'");
-		rs = DB.getResult("select count(*) from cart where usersid='"+usersid+"'");
+		rs = DB.getResult("select count(*) from cart where usersid='"+usersid+"' and cartidIsSameCart="+cartidIsSameCart);
 		try {
 			if(rs.next()) 
 			{
@@ -31,13 +36,28 @@ public class CartDB {
 			e.printStackTrace();
 		}
 		
+		cartid = new int[cartnum];
+		rs = DB.getResult("select cartid from cart where usersid='"+usersid+"' and cartidIsSameCart="+cartidIsSameCart);
+		for (int i = 0; i < cartnum; i++) {
+			try {
+				rs.next();
+				cartid[i] = rs.getInt(1);
+			} catch (SQLException e) {
+				System.out.println("카트아이디: 조회된 데이터가 없습니다.");
+				e.printStackTrace();
+			}
+			
+		}
+		
 		cdbdata = new CartDBData[cartnum];
+
 		//메뉴 정보 받아옴.
-		rsCart = DB.getResult("select menuid from cart where usersid='"+usersid+"' ORDER BY cartid asc");
+		rsCart = DB.getResult("select menuid from cart where usersid='"+usersid+"' and cartidIsSameCart="+cartidIsSameCart+" ORDER BY cartid asc");
 		try {
 			for (int i = 0; i < cartnum; i++) {
 				cdbdata[i] = new CartDBData();
 				if(rsCart.next()) {
+					cdbdata[i].setCartid(cartid[i]);
 					cdbdata[i].setMenuid(rsCart.getInt(1));
 					rsMenu = DB.getResult("select * from menu where menuid="+rsCart.getInt(1));
 					rsMenu.next();
@@ -45,6 +65,7 @@ public class CartDB {
 					cdbdata[i].setMenuname(rsMenu.getString("menuname"));
 					cdbdata[i].setMenuprice(rsMenu.getInt("menuprice"));
 					cdbdata[i].setMenucategory(rsMenu.getString("menucategory"));
+					cdbdata[i].setCaridisSameCart(cartidIsSameCart);
 					rsMenu.close();
 				}
 			}
@@ -54,7 +75,7 @@ public class CartDB {
 		}
 		
 		//옵션 정보 받아옴
-		rsCart = DB.getResult("select * from cart where usersid='"+usersid+"' ORDER BY cartid asc");
+		rsCart = DB.getResult("select * from cart where usersid='"+usersid+"' and cartidIsSameCart="+cartidIsSameCart+"ORDER BY cartid asc");
 		try {
 			for (int i = 0; i < cartnum; i++) {
 								
@@ -78,7 +99,7 @@ public class CartDB {
 	public void deleteCartAll(String usersid) 
 	{
 		try {
-			DB.executeSQL("delete from cart where usersid='"+usersid+"'");
+			DB.executeSQL("delete from cart where usersid='"+usersid+"' and cartidIsSameCart="+cartidIsSameCart);
 			DB.conn.commit();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -88,7 +109,7 @@ public class CartDB {
 	public void deleteCart(String usersid,int menuid) 
 	{
 		try {
-			DB.executeSQL("delete from cart where usersid='"+usersid+"' and menuid="+menuid);
+			DB.executeSQL("delete from cart where usersid='"+usersid+"' and cartidIsSameCart="+cartidIsSameCart+" and menuid="+menuid);
 			DB.conn.commit();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

@@ -77,7 +77,7 @@ public class CommonPanel extends JFrame implements MouseListener{
 	
 	public static int getTitleW(String title) {
 		int[] fontsizex = {108,260,286,216,333};//cart,orderlist,pointusage,payment,orderdetail
-		String[] fontTitle = {"Cart","ORDER LIST","POINT USAGE","Payment","ORDER DETAILS"};
+		String[] fontTitle = {"Cart","Order List","Point Usage","Payment","OrderDetails"};
 		if(title.equals(fontTitle[0])) return fontsizex[0];
 		else if(title.equals(fontTitle[1])) return fontsizex[1];
 		else if(title.equals(fontTitle[2])) return fontsizex[2];
@@ -88,7 +88,7 @@ public class CommonPanel extends JFrame implements MouseListener{
 	
 	public static int getTitleH(String title) {
 		int[] fontsizey = {38,50,55,48,50};
-		String[] fontTitle = {"Cart","ORDER LIST","POINT USAGE","Payment","ORDER DETAILS"};
+		String[] fontTitle = {"Cart","Order List","Point Usage","Payment","OrderDetails"};
 		if(title.equals(fontTitle[0])) return fontsizey[0];
 		else if(title.equals(fontTitle[1])) return fontsizey[1];
 		else if(title.equals(fontTitle[2])) return fontsizey[2];
@@ -131,10 +131,44 @@ public class CommonPanel extends JFrame implements MouseListener{
 				arrcopy[i] = caOriginSum[i-1];
 			}
 			return String.valueOf(arrcopy);
+		}else if(iOriginSum>=100000&&iOriginSum<1000000) {
+			char[] caOriginSum = sOriginSum.toCharArray();
+			char[] arrcopy = {' ',' ',' ',',',' ',' ',' '};
+			arrcopy[0] = caOriginSum[0];
+			arrcopy[1] = caOriginSum[1];
+			arrcopy[2] = caOriginSum[2];
+			for (int i = 4; i < 7; i++) {
+				arrcopy[i] = caOriginSum[i-1];
+			}
+			return String.valueOf(arrcopy);
 		}
 		return str;
 	}
 
+	public static String transformTimeFormat(String time) {
+		/*  First Writed By SonhYunHa, Inha Technical College grade 2, Korea 
+		 * Writed in 2022.05.30 */
+		char[] carrTime = time.toCharArray();
+		for(char c : carrTime) 
+		{
+			System.out.println(c);
+		}
+		if(carrTime[6]=='P') 
+		{
+			carrTime[0] = (char)((int)carrTime[0] + 1);
+			carrTime[1] = (char)((int)carrTime[1] + 2);
+		}
+		char[] carrOtherFormatTime = {' ',' ',' ',':',' ',' ',' '};
+		
+		carrOtherFormatTime[0] = carrTime[0];
+		carrOtherFormatTime[1] = carrTime[1];
+		carrOtherFormatTime[3] = carrTime[2];
+		carrOtherFormatTime[5] = carrTime[3];
+		carrOtherFormatTime[6] = carrTime[4];
+		
+		return String.valueOf(carrOtherFormatTime);
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		
@@ -145,12 +179,18 @@ public class CommonPanel extends JFrame implements MouseListener{
 		btnback.setIcon(iiconbtnbackPressed);
 		if(this.title.equals("Payment")) 
 		{
-			Test.getActivatedFrame().dispose();
-			Test.setActivatedFrame(new Cart());
+			redraw(new Cart());
 		}
 		
 	}
-
+	public static void redraw(JPanel panel) {
+		Main.getMf().remove(Main.getMf().getCurrentPanel());
+		Main.getMf().setCurrentPanel(panel);
+		Main.getMf().add(Main.getMf().getCurrentPanel());
+		Main.getMf().setVisible(false);
+		Main.getMf().setVisible(true);
+		
+	}
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		btnback.setIcon(iiconbtnbackRollover);
@@ -165,4 +205,9 @@ public class CommonPanel extends JFrame implements MouseListener{
 	public void mouseExited(MouseEvent e) {
 		btnback.setIcon(iiconbtnbackEnabledTrue);
 	}
+
+	public static JLabel getLbl_title() {
+		return lbl_title;
+	}
+	
 }

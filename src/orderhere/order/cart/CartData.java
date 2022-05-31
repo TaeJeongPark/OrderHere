@@ -2,6 +2,7 @@ package orderhere.order.cart;
 
 public class CartData {
 
+	private int[] cartid;
 	private String usersid;
 	private int storeid;
 	private String[] sarrMenuNames;
@@ -12,18 +13,22 @@ public class CartData {
 	private int iSumPrice;
 	private int iIsReserved = 0;
 	private int cartnum = 0;
+	private int[] cartidisSameCart;
 	
 	public CartData(int cartnum) 
 	{
 		this.cartnum = cartnum;
 		
+		cartid = new int[cartnum];
 		sarrMenuNames = new String[cartnum];
 		sarrMenuOptions = new String[cartnum];
 		sarrMenuCartQuantities = new String[cartnum];
 		sarrMenuPrice = new String[cartnum];
+		cartidisSameCart = new int[cartnum];
 		
 		for(int i=0; i<cartnum; i++)
 		{
+			cartid[i] = 0;
 			sarrMenuNames[i] = new String();
 			sarrMenuOptions[i] = new String();
 			sarrMenuCartQuantities[i] = new String();
@@ -32,11 +37,20 @@ public class CartData {
 		
 	}
 
-	public void setData(int index,String sarrMenuName,String sarrMenuOption, String sarrMenuCartQuantity, String sarrMenuPrice) {
+	public void setData(int index,int cartid, String sarrMenuName,
+			String sarrMenuOption, String sarrMenuCartQuantity, String sarrMenuPrice,int caridisSameCart) {
+		
+		this.cartid[index] = cartid;
 		sarrMenuNames[index] = sarrMenuName;
 		sarrMenuOptions[index] = sarrMenuOption;
 		sarrMenuCartQuantities[index] = sarrMenuCartQuantity;
 		this.sarrMenuPrice[index] = sarrMenuPrice;
+		this.cartidisSameCart[index] = caridisSameCart;
+	}
+
+	
+	public int[] getCartid() {
+		return cartid;
 	}
 
 	public String getUsersid() {
@@ -97,6 +111,10 @@ public class CartData {
 
 	public String[] getSarrMenuPrice() {
 		return sarrMenuPrice;
+	}
+
+	public int[] getCartidisSameCart() {
+		return cartidisSameCart;
 	}
 	
 }

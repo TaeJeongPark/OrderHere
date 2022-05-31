@@ -25,14 +25,14 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import orderhere.order.CommonPanel;
-import orderhere.order.Test;
+import orderhere.order.Main;
 import orderhere.order.cart.CartData;
 import orderhere.order.db.DB;
 import orderhere.order.orderdetails.OrderDetails;
 
-public class Payment extends JFrame implements ActionListener, MouseListener{
+public class Payment extends JPanel implements ActionListener, MouseListener{
 	
-		private int cartid = 1;
+		private int[] cartid;
 		private String usersid;
 		private int storeid;
 		private String storeAddress;
@@ -52,25 +52,31 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 		private JButton btnOrder;
 		private int cartnum;
 		private int inputPoint;
+		private int[] cartidisSameCart;
 		
 		public Payment(CartData cd) 
 		{
 			this.cd = cd;
-			
+
+			cartnum = cd.getCartnum();
+			cartid = new int[cartnum];
+			cartidisSameCart = new int[cartnum];
+			for (int i = 0; i < cartnum; i++) {
+				cartid[i] = cd.getCartid()[i];
+				cartidisSameCart[i] = cd.getCartidisSameCart()[i];
+			}			 
 			usersid = cd.getUsersid();
 			storeid = cd.getStoreid();
 			iSumPrice = cd.getiSumPrice();
 			iIsReserved = cd.getiIsReserved();//1이면 에약, 0이면 미예약
 			sReservedTime = cd.getsReservedTime();
-			cartnum = cd.getCartnum();
 			
 			getDataFromDB();
 			
 			iToPay = iSumPrice;
 
-			setSize(1050,789);
-			setLocation(100,0);//화면 가운데 배치 필요
-			setDefaultCloseOperation(EXIT_ON_CLOSE);
+			setSize(1050,750);
+			setLocation(0,0);//화면 가운데 배치 필요
 			setLayout(null);
 			
 			add(new CommonPanel().createTop("Payment"));
@@ -78,7 +84,6 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 			
 			setVisible(true);
 		}
-
 
 		private void createBody() {
 			JPanel p_body = new JPanel();
@@ -305,8 +310,7 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 				}else if(iUsersCash>=iToPay) 
 				{
 					pay();
-					Test.setActivatedFrame(new OrderDetails());
-					this.dispose();
+					CommonPanel.redraw(new OrderDetails(cd.getCartidisSameCart()[0]));
 				}
 			}
 				
@@ -340,7 +344,7 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 				System.out.println("날짜: 조회된 데이터가 없습니다.");
 				e.printStackTrace();
 			}
-			
+			orderdate = "2022-05-29 12:31:46";
 			int iGotPoint = (int)(Math.round(iToPay*0.01));
 			int iChangedUsersPoint = iUsersPoint+iGotPoint;
 			DB.executeSQL("insert into userspoint(usersid,pointid,orderdate,pointstatus,pointvalue,point) values ('"+
@@ -363,9 +367,25 @@ public class Payment extends JFrame implements ActionListener, MouseListener{
 				System.out.println("주문번호: 조회된 데이터가 없습니다.");
 				e.printStackTrace();
 			}
-			DB.executeSQL("insert into orders(orderid,usersid,storeid,cartid,orderdate,orderusagepoint,orderusagecash,ordersum) values ("+
-						orderid+",'"+usersid+"',"+storeid+","+cartid+",'"+orderdate+"',"+inputPoint+","+iToPay+","+iSumPrice+")");
+			String orderReservedTime = cd.getsReservedTime().replaceAll(" ","");
 			
+			
+			try {
+				rs = DB.getResult("select to_char(sysdate,'yyyy-mm-dd') from Dual");
+				rs.next();
+				orderReservedTime = rs.getString(1)+" " + orderReservedTime;
+				rs.close();
+			} catch (SQLException e1) {
+				System.out.println("예약 시간: 조회된 데이터가 없습니다. ");
+				e1.printStackTrace();
+			}
+			
+			for (int i = 0; i < cartnum; i++) {
+				System.out.println(cartid[i]);
+				DB.executeSQL("insert into orders(orderid,usersid,storeid,cartid,pointid,orderdate,orderReservedTime,orderusagepoint,orderusagecash,ordersum,cartidissamecart) values ("+
+						(orderid+i)+",'"+usersid+"',"+storeid+","+cartid[i]+","+pointid+",'"+orderdate+"','"+orderReservedTime+"',"+inputPoint+","+iToPay+","+iSumPrice+","+cartidisSameCart[i]+")");
+							
+			}
 			try {
 				DB.conn.commit();
 			} catch (SQLException e) {
