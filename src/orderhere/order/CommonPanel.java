@@ -187,8 +187,8 @@ public class CommonPanel extends JFrame implements MouseListener{
 		Main.getMf().remove(Main.getMf().getCurrentPanel());
 		Main.getMf().setCurrentPanel(panel);
 		Main.getMf().add(Main.getMf().getCurrentPanel());
-		Main.getMf().setVisible(false);
-		Main.getMf().setVisible(true);
+		Main.getMf().getContentPane().setVisible(false);
+		Main.getMf().getContentPane().setVisible(true);
 		
 	}
 	@Override
