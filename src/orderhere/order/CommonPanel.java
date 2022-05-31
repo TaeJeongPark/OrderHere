@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import orderhere.order.cart.Cart;
+import orderhere.order.orderdetails.OrderList;
 
 public class CommonPanel extends JFrame implements MouseListener{
 	private static JPanel p_top;
@@ -180,6 +181,9 @@ public class CommonPanel extends JFrame implements MouseListener{
 		if(this.title.equals("Payment")) 
 		{
 			redraw(new Cart());
+		}else if(this.title.equals("OrderDetails")) 
+		{
+			redraw(new OrderList());
 		}
 		
 	}

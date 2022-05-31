@@ -19,7 +19,7 @@ public class MainFrame extends JFrame{
 		setLayout(null);
 		
 //		currentPanel = new Cart();
-//		currentPanel = new OrderList();
+		currentPanel = new OrderList();
 //		currentPanel = new PointUsage();
 		add(currentPanel);
 
