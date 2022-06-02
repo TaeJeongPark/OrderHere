@@ -6,8 +6,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -16,15 +14,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -34,12 +29,12 @@ import javax.swing.border.EmptyBorder;
 import orderhere.common.DB;
 import orderhere.common.Encryption;
 import orderhere.common.UsersData;
-import orderhere.common.Validation;
-import orderhere.main.MainFrame;
+import orderhere.common.Boilerplate;
+import orderhere.start.MainFrame;
 
 /**
 * @packageName	: orderhere.login
-* @fileName		: LoginFrame.java
+* @fileName		: Login.java
 * @author		: TaeJeong Park
 * @date			: 2022.05.20
 * @description	: 로그인 화면(00)
@@ -49,8 +44,9 @@ import orderhere.main.MainFrame;
 * 2022.05.20		TaeJeong Park		최초 생성
 * 2022.05.20		TaeJeong Park		레이아웃 구현 완료
 * 2022.05.21		TaeJeong Park		기능 구현 완료
+* 2022.06.02		TaeJeong Park		화면 전환 방식 변경
 */
-public class LoginFrame extends JFrame implements ActionListener, FocusListener, KeyListener, MouseListener, WindowListener {
+public class Login extends JPanel implements ActionListener, FocusListener, KeyListener, MouseListener {
 	
 	private String usersId;				//회원 아이디
 	private String usersPw;				//회원 비밀번호
@@ -61,54 +57,47 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 	
 	private JTextField tfId;			//아이디 입력 텍스트필드
 	private JPasswordField tfPw;		//비밀번호 입력 패스워드필드
-	private JPanel pnBackground;		//백그라운드 패널
 	private JLabel lblError;			//오류 메시지 출력 라벨
 	private JButton btnLogin;			//로그인 버튼
 	private JLabel btnLblJoin;			//회원가입 화면 이동 라벨버튼
 	private JLabel btnLblFind;			//아이디/비밀번호 찾기 화면 이동 라벨버튼
 	private boolean loginFlag = false;	//로그인 버튼 활성화 상태 저장
 	
-	private JoinFrame jf = null;		//회원가입 프레임 객체
-	private FindFrame ff = null;		//아이디/비밀번호 찾기 프레임 객체
-	private MainFrame mf = null;		//메인 프레임 객체
+	private MainFrame mainFrame = null;	//메인 프레임 객체
+	private Join join = null;			//회원가입 패널 객체
+	private Find find = null;			//아이디/비밀번호 찾기 패널 객체
+//	private Main main = null;			//메인 패널 객체
+	
+	private ImageIcon icLoginET;		//로그인 버튼(EnabledTrue) 이미지 아이콘
+	private ImageIcon icLoginRo;		//로그인 버튼(Rollover) 이미지 아이콘
+	private ImageIcon icLoginPr;		//로그인 버튼(Pressed) 이미지 아이콘
 	
 	
 	//로그인 화면
-	public LoginFrame(String title) {
+	public Login(MainFrame mainFrame) {
 		
-        setTitle(title);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocation(300, 50);
-//        setLocationRelativeTo(null);
-        setSize(1050, 789);
-        setResizable(false);
-        setLayout(new BorderLayout());
-        
-        
-        //타이틀바 아이콘 설정
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        Image img = tk.getImage("images/common/logo_titleBar.png");
-        setIconImage(img);
-        
-        
-        pnBackground = new JPanel();
-		pnBackground.setLayout(new BorderLayout());
-		pnBackground.setBorder(BorderFactory.createEmptyBorder(100, 0, 50, 0));
-		pnBackground.setBackground(new Color(1, 168, 98));
+		setLayout(new BorderLayout());
+		setBorder(new EmptyBorder(100, 0, 0, 0));	//패널 패딩 설정
+        setBackground(new Color(1, 168, 98));
 		
-        makeLogo();		//로고 영역 생성
-        makeInput();	//인풋필드 영역 생성
-        makeInfo();		//안내정보 영역 생성
-
-    	add(pnBackground, BorderLayout.CENTER);
-    	pnBackground.setVisible(true);
+		this.mainFrame = mainFrame;
+		
+		makeImageIcon();	//이미지 아이콘 생성
+		
+        makeLogo();			//로고 영역 생성
+        makeInput();		//인풋필드 영역 생성
+        makeInfo();			//안내정보 영역 생성
         
-        setVisible(true);
-        
-        DB.init();	//DB 연결
-        
-        addWindowListener(this);
     }
+	
+	//이미지 아이콘 생성
+	private void makeImageIcon() {
+		
+		icLoginET = new ImageIcon("images/login/Btn_Login_EnabledTrue.png");	//로그인 버튼(EnabledTrue) 이미지 아이콘
+		icLoginRo = new ImageIcon("images/login/Btn_Login_Rollover.png");		//로그인 버튼(Rollover) 이미지 아이콘
+		icLoginPr = new ImageIcon("images/login/Btn_Login_Pressed.png");		//로그인 버튼(Pressed) 이미지 아이콘
+		
+	}
 
 	//로고 영영 생성
 	private void makeLogo() {
@@ -120,7 +109,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		JLabel lblLogo = new JLabel(new ImageIcon("images/login/logo_login.png"));
 		
 		pnLogo.add(lblLogo);
-		pnBackground.add(pnLogo, BorderLayout.NORTH);
+		add(pnLogo, BorderLayout.NORTH);
 		
 	}
 
@@ -165,15 +154,8 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		
 		
 		//로그인 버튼
-		btnLogin = new JButton(new ImageIcon("images/login/Btn_Login_EnabledTrue.png"));
-		btnLogin.setRolloverIcon(new ImageIcon("images/login/Btn_Login_Rollover.png"));
-		btnLogin.setPressedIcon(new ImageIcon("images/login/Btn_Login_Pressed.png"));
-		btnLogin.setBorderPainted(false);					//버튼 테두리 설정
-		btnLogin.setContentAreaFilled(false);				//버튼 배경 표시 설정
-		btnLogin.setFocusPainted(false);					//포커스 표시 설정
-		btnLogin.setOpaque(false);							//투명하게 설정
-		btnLogin.setPreferredSize(new Dimension(414, 48));	//버튼 크기 설정
-		btnLogin.setEnabled(false);							//비활성화 상태로 생성
+		btnLogin = new JButton(icLoginET);
+		Boilerplate.setImageButton(btnLogin, icLoginRo, icLoginPr, 414, 48);	//이미지 버튼 세팅
 		btnLogin.addActionListener(this);
 		
 		
@@ -202,7 +184,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		pnInput.add(pnJoinFind);
 		
 		pnInputBackground.add(pnInput);
-		pnBackground.add(pnInputBackground, BorderLayout.CENTER);
+		add(pnInputBackground, BorderLayout.CENTER);
 		
 	}
 
@@ -211,7 +193,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		
 		JPanel pnInfoBackground = new JPanel();
 		pnInfoBackground.setLayout(new GridLayout(1, 2));
-		pnInfoBackground.setBorder(new EmptyBorder(20, 50, 0, 50));	//패널 패딩 설정
+		pnInfoBackground.setBorder(new EmptyBorder(20, 50, 50, 50));	//패널 패딩 설정
 		pnInfoBackground.setBackground(new Color(1, 168, 98));		//패널 색상 배경생과 동일하게 설정
 		
 		//이용약관 안내
@@ -238,20 +220,20 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		
 		pnInfoBackground.add(pnInfoTOS);
 		pnInfoBackground.add(pnInfoVerion);
-		pnBackground.add(pnInfoBackground, BorderLayout.SOUTH);
+		add(pnInfoBackground, BorderLayout.SOUTH);
 		
 	}
 	
 	//로그인 에러 핸들링
 	private void errorHandling() {
 		
-		setPH(tfId);
+		tfId.setText("");
 		setPwPH(tfPw);
 		btnLogin.setEnabled(false);
 		lblError.setText("아이디 혹은 비밀번호가 일치하지 않습니다.");
 		tfId.requestFocus();
 		
-		System.out.println("로그인 실패");
+		System.out.println("(Login) 로그인 실패");
 		
 	}
 	
@@ -292,6 +274,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 	
 	//비밀번호 문자열로 변환
 	private String getPassword(JPasswordField pw) {
+		
 		String pwStr = "";
 		char[] secret_pw = pw.getPassword();
 		
@@ -300,6 +283,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		     pwStr += cha;
 		}
 		return pwStr;
+		
 	}
 
 	@Override
@@ -309,31 +293,31 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		
 		//로그인 유효성 검사
 		if(loginFlag && (obj == btnLogin || obj == tfId || obj == tfPw)) {	//로그인 절차 진행여부 감지
-			if(Validation.idValidation(tfId.getText())) {	//ID 유효성 검사 : 영문, 숫자 조합만 사용 가능하며, 첫 자리에 숫자 사용 불가능
+			if(Boilerplate.idValidation(tfId.getText())) {	//ID 유효성 검사 : 영문, 숫자 조합만 사용 가능하며, 첫 자리에 숫자 사용 불가능
 				
 				String pw = getPassword(tfPw);
 				
-				if(Validation.pwValidation(pw)) {	//PW 유효성 검사 : 영문, 숫자, 특수문자 조합만 사용 가능
+				if(Boilerplate.pwValidation(pw)) {	//PW 유효성 검사 : 영문, 숫자, 특수문자 조합만 사용 가능
 					lblError.setText("");
-					System.out.println("로그인 진행");
+					System.out.println("(Login) 로그인 진행");
 					
-					usersInId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장 
+					usersInId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장
 					usersInPw = pw;	//사용자가 비밀번호 텍스트필드에 입력한 데이터 저장
 					
 					ResultSet rs = DB.getResult("select * from USERS WHERE USERSID = '" + usersInId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
 					
 					try {
 						if(rs.next()) {
-							usersId = rs.getString("USERSID");	//조회 결과 데이터(회원 아이디) 저장
-							usersPw = rs.getString("USERSPW");	//조회 결과 데이터(회원 비밀번호) 저장
-							usersPwSalt = rs.getString("USERSPWSALT");	//조회 결과 데이터(회원 비밀번호) 저장
+							usersId = rs.getString("USERSID");			//조회 결과 데이터(회원 아이디) 저장
+							usersPw = rs.getString("USERSPW");			//조회 결과 데이터(회원 비밀번호) 저장
+							usersPwSalt = rs.getString("USERSPWSALT");	//조회 결과 데이터(회원 난수값) 저장
 							
-							System.out.println("회원 조회 성공");
+							System.out.println("(Login) 회원 조회 성공");
 							
-							usersInPw = Encryption.SHA512(usersInPw, usersPwSalt);	//사용자가 입력한 아이디를 조회된 회원 비밀번호 난수 데이터로 SHA512 암호화
+							usersInPw = Encryption.SHA512(usersInPw, usersPwSalt);	//사용자가 입력한 아이디를 통해 조회된 회원 난수 데이터로 SHA512 암호화
 							
 							if(usersId.equals(usersInId) && usersPw.equals(usersInPw)) {
-								System.out.println("로그인 성공");
+								System.out.println("(Login) 로그인 성공");
 								
 								setPH(tfId);				//PlaceHolder 세팅
 								setPwPH(tfPw);				//PlaceHolder 세팅
@@ -342,8 +326,10 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 								UsersData.setUsersId(usersId);	//로그인한 회원 아이디 저장
 								
 								//메인 화면으로 이동
-								mf = new MainFrame();	//메인 화면 생성
-								dispose();	//현재 화면 종료
+//								Main = new Main(this);
+//								mainFrame.add(Main, BorderLayout.CENTER);
+//								Main.setVisible(true);	//메인 화면 활성화
+//								setVisible(false);		//로그인 화면 비활성화
 							} else {
 								errorHandling();
 							}
@@ -351,7 +337,7 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 							errorHandling();
 						}
 					} catch (SQLException e1) {
-						System.out.println("예외발생 : DB 조회에 실패했습니다.");
+						System.out.println("(Login) 예외발생 : DB 조회에 실패했습니다.");
 						errorHandling();
 						e1.printStackTrace();
 					}
@@ -444,20 +430,18 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		if(obj == btnLblJoin) {	//회원가입 라벨버튼 클릭시
 			btnLblJoin.setForeground(Color.BLACK);
 			
-			jf = new JoinFrame(this);
-	        add(jf.getPnJoinBackground(), BorderLayout.CENTER);
-	        jf.getPnJoinBackground().setVisible(true);	//회원가입 화면 활성화
-			pnBackground.setVisible(false);	//로그인 화면 비활성화
-			setTitle("Join");
+			join = new Join(this);
+			mainFrame.add(join, BorderLayout.CENTER);
+	        join.setVisible(true);	//회원가입 화면 활성화
+			setVisible(false);		//로그인 화면 비활성화
 			
 		} else if(obj == btnLblFind) {	//아이디/비밀번호 찾기 라벨버튼 클릭시
 			btnLblFind.setForeground(Color.BLACK);
 			
-			ff = new FindFrame(this);
-			add(ff.getPnFindBackground(), BorderLayout.CENTER);
-			ff.getPnFindBackground().setVisible(true);	//아이디/비밀번호 찾기 화면 활성화
-			pnBackground.setVisible(false);	//로그인 화면 비활성화
-			setTitle("ID/PW Find");
+			find = new Find(this);
+			mainFrame.add(find, BorderLayout.CENTER);
+			find.setVisible(true);	//아이디/비밀번호 찾기 화면 활성화
+			setVisible(false);		//로그인 화면 비활성화
 		}
 		
 	}
@@ -495,45 +479,6 @@ public class LoginFrame extends JFrame implements ActionListener, FocusListener,
 		} else if(obj == btnLblFind) {
 			btnLblFind.setForeground(Color.BLACK);
 		}
-		
-	}
-	
-	public JPanel getPnBackground() {
-		return pnBackground;
-	}
-
-	@Override
-	public void windowOpened(WindowEvent e) {
-		
-	}
-
-	@Override
-	public void windowClosing(WindowEvent e) {
-		DB.closeDB(DB.conn, DB.stmt);	//DB 연결 종료
-	}
-
-	@Override
-	public void windowClosed(WindowEvent e) {
-		
-	}
-
-	@Override
-	public void windowIconified(WindowEvent e) {
-		
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-		
-	}
-
-	@Override
-	public void windowActivated(WindowEvent e) {
-		
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {
 		
 	}
 

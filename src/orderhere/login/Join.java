@@ -31,11 +31,11 @@ import javax.swing.border.EmptyBorder;
 
 import orderhere.common.DB;
 import orderhere.common.Encryption;
-import orderhere.common.Validation;
+import orderhere.common.Boilerplate;
 
 /**
 * @packageName	: orderhere.login
-* @fileName		: JoinFrame.java
+* @fileName		: Join.java
 * @author		: TaeJeong Park
 * @date			: 2022.05.21
 * @description	: 회원가입 화면(0001)
@@ -45,16 +45,17 @@ import orderhere.common.Validation;
 * 2022.05.21		TaeJeong Park		최초 생성
 * 2022.05.21		TaeJeong Park		레이아웃 구현 완료
 * 2022.05.22		TaeJeong Park		기능 구현 완료
+* 2022.06.02		TaeJeong Park		화면 전환 방식 변경
 */
-public class JoinFrame extends JFrame implements ActionListener, FocusListener, KeyListener, ItemListener {
+public class Join extends JPanel implements ActionListener, FocusListener, KeyListener, ItemListener {
 	
-	private String usersInId;		//사용자에게 입력 받은 아이디
-	private String usersInPw;		//사용자에게 입력 받은 비밀번호
-	private String usersInName; 	//사용자에게 입력 받은 이름
-	private String usersInBirthday; //사용자에게 입력 받은 생년월일
-	private String usersInPhoneNum; //사용자에게 입력 받은 휴대폰번호
+	private String usersInId;				//사용자에게 입력 받은 아이디
+	private String usersInPw;				//사용자에게 입력 받은 비밀번호
+	private String usersInName; 			//사용자에게 입력 받은 이름
+	private String usersInBirthday; 		//사용자에게 입력 받은 생년월일
+	private String usersInPhoneNum; 		//사용자에게 입력 받은 휴대폰번호
 	
-	private LoginFrame lf;					//로그인 프레임 객체
+	private Login login = null;				//로그인 패널 객체
 	private JTextField tfId;				//아이디 입력 텍스트필드
 	private JButton btnOverlapChk;			//중복확인 버튼
 	private JPasswordField tfPw;			//비밀번호 입력 텍스트필드
@@ -80,24 +81,65 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 	private int year = 2003;				//생년 저장
 	private int month = 1;					//생월 저장
 	private int day = 1;					//생일 저장
-	private static JPanel pnJoinBackground;	//회원가입 패널
+	
+	private ImageIcon icCancelET;			//취소 버튼(EnabledTrue) 이미지 아이콘
+	private ImageIcon icCancelRo;			//취소 버튼(Rollover) 이미지 아이콘
+	private ImageIcon icCancelPr;			//취소 버튼(Pressed) 이미지 아이콘
+	private ImageIcon icCertifiedET;		//인증하기 버튼(EnabledTrue) 이미지 아이콘
+	private ImageIcon icCertifiedRo;		//인증하기 버튼(Rollover) 이미지 아이콘
+	private ImageIcon icCertifiedPr;		//인증하기 버튼(Pressed) 이미지 아이콘
+	private ImageIcon icOkET;				//확인 버튼(EnabledTrue) 이미지 아이콘
+	private ImageIcon icOkRo;				//확인 버튼(Rollover) 이미지 아이콘
+	private ImageIcon icOkPr;				//확인 버튼(Pressed) 이미지 아이콘
+	private ImageIcon icOverlapChkET;		//중복확인 버튼(EnabledTrue) 이미지 아이콘
+	private ImageIcon icOverlapChkRo;		//중복확인 버튼(Rollover) 이미지 아이콘
+	private ImageIcon icOverlapChkPr;		//중복확인 버튼(Pressed) 이미지 아이콘
+	private ImageIcon icSendET;				//전송하기 버튼(EnabledTrue) 이미지 아이콘
+	private ImageIcon icSendRo;				//전송하기 버튼(Rollover) 이미지 아이콘
+	private ImageIcon icSendPr;				//전송하기 버튼(Pressed) 이미지 아이콘
 	
 	
 	//회원가입 화면
-	public JoinFrame(LoginFrame lf) {
+	public Join(Login login) {
 		
-        pnJoinBackground = new JPanel();
-        pnJoinBackground.setLayout(new BorderLayout());
-        pnJoinBackground.setBackground(new Color(1, 168, 98));
-        pnJoinBackground.setVisible(false);
+        setLayout(new BorderLayout());
+        setBackground(new Color(1, 168, 98));
         
-		this.lf = lf;
+		this.login = login;
         
-        makeTitle();	//타이틀 영역 생성
-        makeInput();	//인풋필드 영역 생성
+		makeImageIcon();	//이미지 아이콘 생성
+		
+        makeTitle();		//타이틀 영역 생성
+        makeInput();		//인풋필드 영역 생성
+		
+	}
+	
+	//이미지 아이콘 생성
+	private void makeImageIcon() {
+		
+		icCancelET = new ImageIcon("images/join/Btn_Cancel_EnabledTrue.png");			//취소 버튼(EnabledTrue) 이미지 아이콘
+		icCancelRo = new ImageIcon("images/join/Btn_Cancel_Rollover.png");				//취소 버튼(Rollover) 이미지 아이콘
+		icCancelPr = new ImageIcon("images/join/Btn_Cancel_Pressed.png");				//취소 버튼(Pressed) 이미지 아이콘
+		
+		icCertifiedET = new ImageIcon("images/join/Btn_Certified_EnabledTrue.png");		//인증하기 버튼(EnabledTrue) 이미지 아이콘
+		icCertifiedRo = new ImageIcon("images/join/Btn_Certified_Rollover.png");		//인증하기 버튼(Rollover) 이미지 아이콘
+		icCertifiedPr = new ImageIcon("images/join/Btn_Certified_Pressed.png");			//인증하기 버튼(Pressed) 이미지 아이콘
+		
+		icOkET = new ImageIcon("images/join/Btn_Ok_EnabledTrue.png");					//확인 버튼(EnabledTrue) 이미지 아이콘
+		icOkRo = new ImageIcon("images/join/Btn_Ok_Rollover.png");						//확인 버튼(Rollover) 이미지 아이콘
+		icOkPr = new ImageIcon("images/join/Btn_Ok_Pressed.png");						//확인 버튼(Pressed) 이미지 아이콘
+		
+		icOverlapChkET = new ImageIcon("images/join/Btn_OverlapChk_EnabledTrue.png");	//중복확인 버튼(EnabledTrue) 이미지 아이콘
+		icOverlapChkRo = new ImageIcon("images/join/Btn_OverlapChk_Rollover.png");		//중복확인 버튼(Rollover) 이미지 아이콘
+		icOverlapChkPr = new ImageIcon("images/join/Btn_OverlapChk_Pressed.png");		//중복확인 버튼(Pressed) 이미지 아이콘
+		
+		icSendET = new ImageIcon("images/join/Btn_Send_EnabledTrue.png");				//전송하기 버튼(EnabledTrue) 이미지 아이콘
+		icSendRo = new ImageIcon("images/join/Btn_Send_Rollover.png");					//전송하기 버튼(Rollover) 이미지 아이콘
+		icSendPr = new ImageIcon("images/join/Btn_Send_Pressed.png");					//전송하기 버튼(Pressed) 이미지 아이콘
 		
 	}
 
+	//타이틀 영역 생성
 	private void makeTitle() {
 		JPanel pnTitleBackground = new JPanel();
 		pnTitleBackground.setLayout(new BorderLayout());
@@ -132,10 +174,11 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		
 		pnTitleBackground.add(pnLeft, BorderLayout.WEST);
 		
-		pnJoinBackground.add(pnTitleBackground, BorderLayout.NORTH);
+		add(pnTitleBackground, BorderLayout.NORTH);
 		
 	}
 
+	//인풋필드 영역 생성
 	private void makeInput() {
 		JPanel pnInputBackground = new JPanel();
 		pnInputBackground.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -161,15 +204,8 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		tfId.addKeyListener(this);
 		
 		//중복확인 버튼 생성
-		btnOverlapChk = new JButton(new ImageIcon("images/join/Btn_OverlapChk_EnabledTrue.png"));
-		btnOverlapChk.setRolloverIcon(new ImageIcon("images/join/Btn_OverlapChk_Rollover.png"));
-		btnOverlapChk.setPressedIcon(new ImageIcon("images/join/Btn_OverlapChk_Pressed.png"));
-		btnOverlapChk.setBorderPainted(false);					//버튼 테두리 설정
-		btnOverlapChk.setContentAreaFilled(false);				//버튼 배경 표시 설정
-		btnOverlapChk.setFocusPainted(false);					//포커스 표시 설정
-		btnOverlapChk.setOpaque(false);							//투명하게 설정
-		btnOverlapChk.setPreferredSize(new Dimension(90, 48));	//버튼 크기 설정
-		btnOverlapChk.setEnabled(false);						//비활성화 상태로 생성
+		btnOverlapChk = new JButton(icOverlapChkET);
+		Boilerplate.setImageButton(btnOverlapChk, icOverlapChkRo, icOverlapChkPr, 90, 48);	//이미지 버튼 세팅
 		btnOverlapChk.addActionListener(this);
 		
 		
@@ -240,15 +276,8 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		tfPhonNum.addKeyListener(this);
 		
 		//전송하기 버튼 생성
-		btnSend = new JButton(new ImageIcon("images/join/Btn_Send_EnabledTrue.png"));
-		btnSend.setRolloverIcon(new ImageIcon("images/join/Btn_Send_Rollover.png"));
-		btnSend.setPressedIcon(new ImageIcon("images/join/Btn_Send_Pressed.png"));
-		btnSend.setBorderPainted(false);					//버튼 테두리 설정
-		btnSend.setContentAreaFilled(false);				//버튼 배경 표시 설정
-		btnSend.setFocusPainted(false);						//포커스 표시 설정
-		btnSend.setOpaque(false);							//투명하게 설정
-		btnSend.setPreferredSize(new Dimension(90, 48));	//버튼 크기 설정
-		btnSend.setEnabled(false);							//비활성화 상태로 생성
+		btnSend = new JButton(icSendET);
+		Boilerplate.setImageButton(btnSend, icSendRo, icSendPr, 90, 48);	//이미지 버튼 세팅
 		btnSend.addActionListener(this);
 		
 		
@@ -281,26 +310,13 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		pnBtn.setBackground(new Color(1, 168, 98));	//패널 색상 배경생과 동일하게 설정
 		
 		//취소 버튼 생성
-		btnCancel = new JButton(new ImageIcon("images/join/Btn_Cancel_EnabledTrue.png"));
-		btnCancel.setRolloverIcon(new ImageIcon("images/join/Btn_Cancel_Rollover.png"));
-		btnCancel.setPressedIcon(new ImageIcon("images/join/Btn_Cancel_Pressed.png"));
-		btnCancel.setBorderPainted(false);					//버튼 테두리 설정
-		btnCancel.setContentAreaFilled(false);				//버튼 배경 표시 설정
-		btnCancel.setFocusPainted(false);					//포커스 표시 설정
-		btnCancel.setOpaque(false);							//투명하게 설정
-		btnCancel.setPreferredSize(new Dimension(183, 50));	//버튼 크기 설정
+		btnCancel = new JButton(icCancelET);
+		Boilerplate.setImageButton(btnCancel, icCancelRo, icCancelPr, 183, 50);	//이미지 버튼 세팅
 		btnCancel.addActionListener(this);
 		
 		//확인 버튼 생성
-		btnOk = new JButton(new ImageIcon("images/join/Btn_Ok_EnabledTrue.png"));
-		btnOk.setRolloverIcon(new ImageIcon("images/join/Btn_Ok_Rollover.png"));
-		btnOk.setPressedIcon(new ImageIcon("images/join/Btn_Ok_Pressed.png"));
-		btnOk.setBorderPainted(false);					//버튼 테두리 설정
-		btnOk.setContentAreaFilled(false);				//버튼 배경 표시 설정
-		btnOk.setFocusPainted(false);					//포커스 표시 설정
-		btnOk.setOpaque(false);							//투명하게 설정
-		btnOk.setPreferredSize(new Dimension(183, 50));	//버튼 크기 설정
-		btnOk.setEnabled(false);						//비활성화 상태로 생성
+		btnOk = new JButton(icOkET);
+		Boilerplate.setImageButton(btnOk, icOkRo, icOkPr, 183, 50);	//이미지 버튼 세팅
 		btnOk.addActionListener(this);
 		
 		
@@ -331,7 +347,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		
 		pnInputBackground.add(pnInput);
 		
-		pnJoinBackground.add(pnInputBackground, BorderLayout.CENTER);
+		add(pnInputBackground, BorderLayout.CENTER);
 		
 	}
 	
@@ -393,30 +409,30 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		
 		if(!tfId.getText().equals("  아이디") && !pw1.equals("  비밀번호") && !pw2.equals("  비밀번호 확인") &&  !tfName.getText().equals("  이름")
 				&& !tfPhonNum.getText().equals("  휴대폰번호('-'제외)")&& !tfCertifiNum.getText().equals("  인증번호")) {
-			if(overlapFlag && Validation.pwValidation(pw1) && Validation.pwValidation(pw2) && Validation.nameValidation(tfName.getText())
-					&& Validation.birthyearValidation(year) && Validation.birthmonthValidation(month) && Validation.birthdayteValidation(month, day) && Validation.phonNumValidation(tfPhonNum.getText()) && certifiFlag) {
+			if(overlapFlag && Boilerplate.pwValidation(pw1) && Boilerplate.pwValidation(pw2) && Boilerplate.nameValidation(tfName.getText())
+					&& Boilerplate.birthyearValidation(year) && Boilerplate.birthmonthValidation(month) && Boilerplate.birthdayteValidation(month, day) && Boilerplate.phonNumValidation(tfPhonNum.getText()) && certifiFlag) {
 				btnOk.setEnabled(true);	//확인 버튼 활성화
 			} else {
 				btnOk.setEnabled(false);	//확인 버튼 비활성화
 			}
 		}
+		
 	}
-	
-	//숫자 6자리 인증번호 생성
-	public int certificationNum() {
-        return ThreadLocalRandom.current().nextInt(100000, 1000000);
-    }
 	
 	//비밀번호 문자열로 변환
 	private String getPassword(JPasswordField pw) {
+		
 		String pwStr = "";
+		
 		char[] secret_pw = pw.getPassword();
 		
 		for(char cha : secret_pw){
 		     Character.toString(cha);
 		     pwStr += cha;
 		}
+		
 		return pwStr;
+		
 	}
 
 	@Override
@@ -426,8 +442,8 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		
 		if(obj == btnOverlapChk) {
 			//아이디 유효성 검사
-			if(Validation.idValidation(tfId.getText())) {
-				System.out.println("아이디 중복여부 검사");
+			if(Boilerplate.idValidation(tfId.getText())) {
+				System.out.println("(Join) 아이디 중복여부 검사");
 				
 				usersInId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장
 				
@@ -435,15 +451,15 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 				
 				try {
 					if(rs.next()) {
-						System.out.println("아이디 중복");
-						JOptionPane.showMessageDialog(lf, "이미 사용중인 아이디입니다.\n다시 시도해주세요.", "아이디 중복", JOptionPane.ERROR_MESSAGE);
+						System.out.println("(Join) 아이디 중복");
+						JOptionPane.showMessageDialog(login, "이미 사용중인 아이디입니다.\n다시 시도해주세요.", "아이디 중복", JOptionPane.ERROR_MESSAGE);
 						
 						btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
 						setPH(tfId);	//PlaceHolder 세팅
 					} else {
-						System.out.println("아이디 사용가능");
+						System.out.println("(Join) 아이디 사용가능");
 						
-						int result = JOptionPane.showConfirmDialog(lf, "사용 가능한 아이디입니다.\n" + usersInId + "로 사용하시겠습니까?", "아이디 사용 가능", JOptionPane.YES_NO_OPTION);
+						int result = JOptionPane.showConfirmDialog(login, "사용 가능한 아이디입니다.\n" + usersInId + "로 사용하시겠습니까?", "아이디 사용 가능", JOptionPane.YES_NO_OPTION);
 						
 						if(result == JOptionPane.YES_OPTION) {
 							tfId.setEnabled(false);	//아이디 텍스트필드 비활성화
@@ -456,41 +472,41 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 						}
 					}
 				} catch (SQLException e1) {
-					System.out.println("예외발생 : DB 조회에 실패했습니다.");
+					System.out.println("(Join) 예외발생 : DB 조회에 실패했습니다.");
 					e1.printStackTrace();
 				}
 			} else {
-				JOptionPane.showMessageDialog(lf, "사용할 수 없는 아이디입니다.\n아이디는 영문, 숫자 조합의 5자리 이상 12자리 이하로 사용 가능하며,\n첫 자리에 숫자를 사용할 수 없습니다.\n다시 시도해주세요.", "규칙 위배", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(login, "사용할 수 없는 아이디입니다.\n아이디는 영문, 숫자 조합의 5자리 이상 12자리 이하로 사용 가능하며,\n첫 자리에 숫자를 사용할 수 없습니다.\n다시 시도해주세요.", "규칙 위배", JOptionPane.ERROR_MESSAGE);
 				
 				btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
 				setPH(tfId);	//PlaceHolder 세팅
 			}
-		} else if(obj == btnSend && sendCertifiFlag == 1 && Validation.phonNumValidation(tfPhonNum.getText())) {
+		} else if(obj == btnSend && sendCertifiFlag == 1 && Boilerplate.phonNumValidation(tfPhonNum.getText())) {
 			tfPhonNum.setEnabled(false);	//휴대폰번호 텍스트필드 비활성화
 			
-			System.out.println("인증번호 발송");
+			System.out.println("(Join) 인증번호 발송");
 			
-			certifiNum = certificationNum();	//6자리 숫자 난수 생성
-			JOptionPane.showMessageDialog(lf, "인증번호는 [" + certifiNum + "]입니다.", tfPhonNum.getText() + " 문자", JOptionPane.PLAIN_MESSAGE);
+			certifiNum = Boilerplate.certificationNum();	//6자리 숫자 난수 생성
+			JOptionPane.showMessageDialog(login, "인증번호는 [" + certifiNum + "]입니다.", tfPhonNum.getText() + " 문자", JOptionPane.PLAIN_MESSAGE);
 			
 			//인증하기 버튼으로 변경
 			sendCertifiFlag = 2;
-			btnSend.setIcon(new ImageIcon("images/join/Btn_Certified_EnabledTrue.png"));
-			btnSend.setRolloverIcon(new ImageIcon("images/join/Btn_Certified_Rollover.png"));
-			btnSend.setPressedIcon(new ImageIcon("images/join/Btn_Certified_Pressed.png"));
+			btnSend.setIcon(icCertifiedET);
+			btnSend.setRolloverIcon(icCertifiedRo);
+			btnSend.setPressedIcon(icCertifiedPr);
 			btnSend.setEnabled(false);	//인증하기 버튼 비활성화
 			
 			//인증시간 카운트
 			countThread = new CountThread(1, lblCount, btnSend, tfPhonNum, tfCertifiNum);	//카운트 스레드 생성
 			countThread.start();	//카운트 스레드 시작
-			System.out.println("카운트 스레스 실행");
-		} else if(obj == btnSend && sendCertifiFlag == 2 && Validation.certifiNumValidation(tfCertifiNum.getText())) {
-			System.out.println("인증번호 일치여부 검사");
+			System.out.println("(Join) Count Thread 실행");
+		} else if(obj == btnSend && sendCertifiFlag == 2 && Boilerplate.certifiNumValidation(tfCertifiNum.getText())) {
+			System.out.println("(Join) 인증번호 일치여부 검사");
 			
 			if(certifiNum == Integer.parseInt(tfCertifiNum.getText())) {
-				System.out.println("인증완료");
+				System.out.println("(Join) 인증완료");
 				
-				JOptionPane.showMessageDialog(lf, "인증이 완료되었습니다.", "인증 완료", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(login, "인증이 완료되었습니다.", "인증 완료", JOptionPane.PLAIN_MESSAGE);
 				
 				if(countThread.isAlive()) countThread.interrupt();		//카운트 쓰레드 종료
 				
@@ -501,9 +517,9 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 				
 				okBtnChk();
 			} else {
-				System.out.println("인증실패");
+				System.out.println("(Join) 인증실패");
 				
-				JOptionPane.showMessageDialog(lf, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(login, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
 				
 				if(countThread.isAlive()) countThread.interrupt();		//카운트 쓰레드 종료
 				
@@ -514,21 +530,18 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 				
 				//전송하기 버튼으로 변경
 				sendCertifiFlag = 1;
-				btnSend.setIcon(new ImageIcon("images/join/Btn_Send_EnabledTrue.png"));
-				btnSend.setRolloverIcon(new ImageIcon("images/join/Btn_Send_Rollover.png"));
-				btnSend.setPressedIcon(new ImageIcon("images/join/Btn_Send_Pressed.png"));
+				btnSend.setIcon(icSendET);
+				btnSend.setRolloverIcon(icSendRo);
+				btnSend.setPressedIcon(icSendPr);
 				btnSend.setEnabled(false);	//전송하기 버튼 비활성화
 			}
 		} else if(obj == btnCancel) {
-			lf.getPnBackground().setVisible(true);	//로그인 화면 활성화
-			lf.setTitle("Login");
-			pnJoinBackground.setVisible(false);	//회원가입 화면 비활성화
+			login.setVisible(true);	//로그인 화면 활성화
+			setVisible(false);	//회원가입 화면 비활성화
 		} else if(obj == btnOk) {
 			
-			String pw1 = getPassword(tfPw);
-			
 			usersInId = tfId.getText();					//입력받은 아이디 저장
-			usersInPw = pw1;							//입력받은 비밀번호 저장
+			usersInPw = getPassword(tfPw);				//입력받은 비밀번호 저장
 			usersInName = tfName.getText();				//입력받은 이름 저장
 			
 			//입력받은 생년월일 YYYYMMDD 형태로 저장
@@ -541,12 +554,12 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 			usersInPhoneNum = tfPhonNum.getText();		//입력받은 휴대폰번호 저장
 			
 			//입력받은 데이터 유효성 검사
-			if(Validation.idValidation(usersInId) && Validation.nameValidation(usersInName) && Validation.birthdayValidation(usersInBirthday) && Validation.phonNumValidation(usersInPhoneNum)) {
+			if(Boilerplate.idValidation(usersInId) && Boilerplate.nameValidation(usersInName) && Boilerplate.birthdayValidation(usersInBirthday) && Boilerplate.phonNumValidation(usersInPhoneNum)) {
 				
 				String pw2 = getPassword(tfPw2);
 				
 				if(usersInPw.equals(pw2)) {	//비밀번호와 비밀번호 확인 일치여부 검사
-					if(Validation.pwValidation(usersInPw)) {
+					if(Boilerplate.pwValidation(usersInPw)) {
 						String pwSalt = Encryption.Salt();	//SHA512 암호화에 사용할 난수 생성
 						usersInPw = Encryption.SHA512(usersInPw, pwSalt);	//입력받은 비밀번호를 Salt 값으로 SHA512 암호화
 						
@@ -554,25 +567,24 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 								+ " VALUES('" + usersInId + "', '" + usersInPw + "', '" + usersInName + "', '" + usersInBirthday + "', '" + usersInPhoneNum + "', 0, '" + pwSalt + "')";	//회원정보 Insert문 생성
 						DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
 						
-						JOptionPane.showMessageDialog(lf, "회원가입이 완료되었습니다.", "회원가입 완료", JOptionPane.PLAIN_MESSAGE);
+						JOptionPane.showMessageDialog(login, "회원가입이 완료되었습니다.", "회원가입 완료", JOptionPane.PLAIN_MESSAGE);
 						
-						lf.getPnBackground().setVisible(true);	//로그인 화면 활성화
-						lf.setTitle("Login");
-						pnJoinBackground.setVisible(false);	//회원가입 화면 비활성화
+						login.setVisible(true);	//로그인 화면 활성화
+						setVisible(false);	//회원가입 화면 비활성화
 					} else {
-						JOptionPane.showMessageDialog(lf, "사용할 수 없는 비밀번호입니다.\n비밀번호는 영문, 숫자, 특수문자 조합으로\n최소 8자리 이상, 최대 15자리 이하로 사용 가능합니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(login, "사용할 수 없는 비밀번호입니다.\n비밀번호는 영문, 숫자, 특수문자 조합으로\n최소 8자리 이상, 최대 15자리 이하로 사용 가능합니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
 						
 						setPwPH(tfPw2);	//비밀번호 확인 텍스트필드 초기화
 						btnOk.setEnabled(false);	//확인 버튼 비활성화
 					}
 				} else {
-					JOptionPane.showMessageDialog(lf, "비밀번호와 비밀번호 확인이 일치하지 않습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(login, "비밀번호와 비밀번호 확인이 일치하지 않습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
 					
 					setPwPH(tfPw2);	//비밀번호 확인 텍스트필드 초기화
 					btnOk.setEnabled(false);	//확인 버튼 비활성화
 				}
 			} else {
-				JOptionPane.showMessageDialog(lf, "정확하게 입력되지 않은 항목이 있습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(login, "정확하게 입력되지 않은 항목이 있습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		
@@ -690,7 +702,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		}
 		
 		if(!tfPhonNum.getText().equals("  휴대폰번호('-'제외)") && sendCertifiFlag == 1 && !certifiFlag) {
-			if(Validation.phonNumValidation(tfPhonNum.getText())) {	//전송하기 버튼 활성화 조건 검사
+			if(Boilerplate.phonNumValidation(tfPhonNum.getText())) {	//전송하기 버튼 활성화 조건 검사
 				btnSend.setEnabled(true);	//전송하기 버튼 활성화
 			} else {
 				btnSend.setEnabled(false);	//전송하기 버튼 비활성화
@@ -698,7 +710,7 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 		}
 		
 		if(!tfCertifiNum.getText().equals("  인증번호") && sendCertifiFlag == 2 && !certifiFlag) {
-			if(Validation.certifiNumValidation(tfCertifiNum.getText())) {	//인증하기 버튼 활성화 조건 검사
+			if(Boilerplate.certifiNumValidation(tfCertifiNum.getText())) {	//인증하기 버튼 활성화 조건 검사
 				btnSend.setEnabled(true);	//인증하기 버튼 활성화
 			} else {
 				btnSend.setEnabled(false);	//인증하기 버튼 비활성화
@@ -751,15 +763,15 @@ public class JoinFrame extends JFrame implements ActionListener, FocusListener, 
 	}
 	
 	public static void setSendCertifiFlag(int sendCertifiFlagIn) {
+		
 		sendCertifiFlag = sendCertifiFlagIn;
+		
 	}
 
 	public static void setCertifiNum(int certifiNumIn) {
+		
 		certifiNum = certifiNumIn;
-	}
-
-	public JPanel getPnJoinBackground() {
-		return pnJoinBackground;
+		
 	}
 
 }

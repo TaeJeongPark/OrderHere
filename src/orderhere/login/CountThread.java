@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 * @fileName		: CountThread.java
 * @author		: TaeJeong Park
 * @date			: 2022.05.29
-* @description	: 인증번호 입력 제한시간 카운트 쓰레드
+* @description	: 인증번호 입력 제한시간 Count Thread
 * ===========================================================
 * DATE				AUTHOR				NOTE
 * -----------------------------------------------------------
@@ -21,8 +21,8 @@ import javax.swing.JTextField;
 */
 public class CountThread extends Thread {
 	
-	private int min = 3;	//인증시간 분
-	private int sec = 0;	//인증시간 초
+	private int min = 3;				//인증시간 분
+	private int sec = 0;				//인증시간 초
 	
 	private int frameFlag;				//회원가입 : 1, 아이디 찾기 : 2, 비밀번호 찾기 : 3
 	private JLabel lblCount;			//카운트 라벨
@@ -41,6 +41,7 @@ public class CountThread extends Thread {
 	//인증시간 카운트 Thread
 	@Override
 	public void run() {
+		
 		try {
 			while(!Thread.interrupted()) {
 				if(min >= 0) {
@@ -53,23 +54,24 @@ public class CountThread extends Thread {
 			return;
 		} finally {
 			lblCount.setText("");
-			System.out.println("Thread 종료");
+			System.out.println("(CountThread) Thread 종료");
 		}
+		
 	}
 	
 	//인증시간
 	public String getCount() {
 		
 		if(min == 0 && sec == 0) {
-			if(frameFlag == 1) {	//회원가입일 경우
-				JoinFrame.setCertifiNum(0);			//인증번호 만료 처리
-				JoinFrame.setSendCertifiFlag(1);	//전송하기 버튼으로 변경
-			} else if(frameFlag == 2) {	//아이디 찾기일 경우
-				FindFrame.setCertifiNum(0);			//인증번호 만료 처리
-				FindFrame.setSendCertifiFlagId(1);	//전송하기 버튼으로 변경
-			} else if(frameFlag == 3) {	//비밀번호 찾기일 경우
-				FindFrame.setCertifiNum(0);			//인증번호 만료 처리
-				FindFrame.setSendCertifiFlagPw(1);	//전송하기 버튼으로 변경
+			if(frameFlag == 1) {				//회원가입일 경우
+				Join.setCertifiNum(0);			//인증번호 만료 처리
+				Join.setSendCertifiFlag(1);		//전송하기 버튼으로 변경
+			} else if(frameFlag == 2) {			//아이디 찾기일 경우
+				Find.setCertifiNum(0);			//인증번호 만료 처리
+				Find.setSendCertifiFlagId(1);	//전송하기 버튼으로 변경
+			} else if(frameFlag == 3) {			//비밀번호 찾기일 경우
+				Find.setCertifiNum(0);			//인증번호 만료 처리
+				Find.setSendCertifiFlagPw(1);	//전송하기 버튼으로 변경
 			}
 			
 			//전송하기 버튼으로 변경

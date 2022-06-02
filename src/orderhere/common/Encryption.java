@@ -11,7 +11,7 @@ import java.util.Base64;
 * @fileName		: Encryption.java
 * @author		: TaeJeong Park
 * @date			: 2022.05.21
-* @description	: SHA512 암호화를 위한 클래스
+* @description	: SHA512 암호화 클래스
 * ===========================================================
 * DATE				AUTHOR				NOTE
 * -----------------------------------------------------------

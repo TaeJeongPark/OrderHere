@@ -5,7 +5,7 @@ package orderhere.common;
 * @fileName		: UsersData.java
 * @author		: TaeJeong Park
 * @date			: 2022.05.29
-* @description	: 로그인한 회원 정보를 담고 있는 클래스
+* @description	: 로그인 회원 정보를 담고 있는 클래스
 * ===========================================================
 * DATE				AUTHOR				NOTE
 * -----------------------------------------------------------
@@ -15,8 +15,8 @@ package orderhere.common;
 public class UsersData {
 
 	private static String usersId;	//회원 아이디
-	private static int storeId;		//회원이 선택한 매장 번호
-	private static int iIsSameCart;
+	private static int storeId;		//회원이 선택한 매장의 매장번호
+	private static int iIsSameCart;	//동일한 장바구니에 담긴 아이템인지 판별하는 번호
 	
 	public static String getUsersId() {
 		return usersId;

@@ -37,13 +37,13 @@ public class DB {
 			
 			stmt = conn.createStatement();
 			
-			System.out.println("DB 연결 성공");
+			System.out.println("(DB) DB 연결 성공");
 		} catch (ClassNotFoundException e) {
-			System.out.println("예외 발생 : 해당 드라이버가 없습니다.");
+			System.out.println("(DB) 예외 발생 : 해당 드라이버가 없습니다.");
 			e.printStackTrace();
 			connFailAlert();
 		} catch (SQLException e) {
-			System.out.println("예외 발생 : 접속 정보 확인이 필요합니다.");
+			System.out.println("(DB) 예외 발생 : 접속 정보 확인이 필요합니다.");
 			e.printStackTrace();
 			connFailAlert();
 		}
@@ -54,10 +54,10 @@ public class DB {
 	public static ResultSet getResult(String sql) {
 		try {
 			stmt = conn.createStatement();
-			System.out.println("Statement 객체 생성 성공");
+			System.out.println("(DB) Statement 객체 생성 성공");
 			return stmt.executeQuery(sql);
 		} catch (SQLException e) {
-			System.out.println("예외 발생 : DB 조회에 실패했습니다.");
+			System.out.println("(DB) 예외 발생 : DB 조회에 실패했습니다.");
 			e.printStackTrace();
 			connFailAlert();
 			return null;
@@ -68,10 +68,10 @@ public class DB {
 	public static void executeSQL(String sql) {
 		try {
 			stmt = conn.createStatement();
-			System.out.println("Statement 객체 생성 성공");
+			System.out.println("(DB) Statement 객체 생성 성공");
 			stmt.executeUpdate(sql);
 		} catch (SQLException e) {
-			System.out.println("예외 발생 : DB 수정에 실패했습니다.");
+			System.out.println("(DB) 예외 발생 : DB 수정에 실패했습니다.");
 			e.printStackTrace();
 			connFailAlert();
 		}
@@ -82,9 +82,9 @@ public class DB {
 		try {
 			stmt.close();
 			conn.close();
-			System.out.println("DB 연결 종료 성공");
+			System.out.println("(DB) DB 연결 종료 성공");
 		} catch (SQLException e) {
-			System.out.println("예외 발생 : DB 연결 종료에 실패했습니다.");
+			System.out.println("(DB) 예외 발생 : DB 연결 종료에 실패했습니다.");
 			e.printStackTrace();
 			connFailAlert();
 		}

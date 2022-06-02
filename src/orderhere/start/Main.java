@@ -1,11 +1,11 @@
-package orderhere.login;
+package orderhere.start;
 
 /**
-* @packageName	: orderhere.login
+* @packageName	: orderhere.start
 * @fileName		: Main.java
 * @author		: TaeJeong Park
 * @date			: 2022.05.20
-* @description	:
+* @description	: 메인 클래스
 * ===========================================================
 * DATE				AUTHOR				NOTE
 * -----------------------------------------------------------
@@ -16,7 +16,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		LoginFrame lf = new LoginFrame("Login");
+		MainFrame mf = new MainFrame("Login");
 		
 	}
 
