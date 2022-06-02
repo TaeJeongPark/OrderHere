@@ -16,7 +16,7 @@ public class UsersData {
 
 	private static String usersId;	//회원 아이디
 	private static int storeId;		//회원이 선택한 매장 번호
-	
+	private static int iIsSameCart;
 	
 	public static String getUsersId() {
 		return usersId;
@@ -32,6 +32,14 @@ public class UsersData {
 	
 	public static void setStoreId(int storeIdIn) {
 		storeId = storeIdIn;
+	}
+
+	public static int getiIsSameCart() {
+		return iIsSameCart;
+	}
+
+	public static void setiIsSameCart(int iIsSameCart) {
+		UsersData.iIsSameCart = iIsSameCart;
 	}
 	
 }
