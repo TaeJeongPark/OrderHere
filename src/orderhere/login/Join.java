@@ -15,13 +15,15 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
-import java.util.concurrent.ThreadLocalRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,9 +31,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import orderhere.common.Boilerplate;
 import orderhere.common.DB;
 import orderhere.common.Encryption;
-import orderhere.common.Boilerplate;
 
 /**
 * @packageName	: orderhere.login
@@ -312,6 +314,7 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 		//취소 버튼 생성
 		btnCancel = new JButton(icCancelET);
 		Boilerplate.setImageButton(btnCancel, icCancelRo, icCancelPr, 183, 50);	//이미지 버튼 세팅
+		btnCancel.setEnabled(true);	//활성화 상태로 생성
 		btnCancel.addActionListener(this);
 		
 		//확인 버튼 생성
@@ -536,6 +539,10 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 				btnSend.setEnabled(false);	//전송하기 버튼 비활성화
 			}
 		} else if(obj == btnCancel) {
+			overlapFlag = false;	//중복확인 초기화
+			sendCertifiFlag = 1;	//전송하기로 변경
+			certifiFlag = false;	//인증완료 초기화
+			
 			login.setVisible(true);	//로그인 화면 활성화
 			setVisible(false);	//회원가입 화면 비활성화
 		} else if(obj == btnOk) {
@@ -565,6 +572,16 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 						
 						String sqlInsert = "INSERT INTO ALLNIGHT.USERS (USERSID, USERSPW, USERSNAME, USERSBIRTHDAY, USERSPHONNUM, USERSCASH, USERSPWSALT)"
 								+ " VALUES('" + usersInId + "', '" + usersInPw + "', '" + usersInName + "', '" + usersInBirthday + "', '" + usersInPhoneNum + "', 0, '" + pwSalt + "')";	//회원정보 Insert문 생성
+						DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
+						
+						LocalDateTime nowDateTime = LocalDateTime.now();	//현재 날짜와 시간
+						String formatedDateTime = nowDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+						
+						sqlInsert = "ALTER session set NLS_DATE_FORMAT = 'yyyy-mm-dd hh24:mi:ss'";	//날짜 포맷 설정
+						DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
+						
+						sqlInsert = "INSERT INTO ALLNIGHT.POINT (POINTID, USERSID, ORDERDATE, POINTSTATUS, POINTVALUE, POINT)"
+								+ "VALUES(1, '" + usersInId + "', '" + formatedDateTime + "', '세팅', 0, 0)";		//회원 포인트 Insert문 생성
 						DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
 						
 						JOptionPane.showMessageDialog(login, "회원가입이 완료되었습니다.", "회원가입 완료", JOptionPane.PLAIN_MESSAGE);

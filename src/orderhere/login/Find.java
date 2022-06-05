@@ -627,6 +627,11 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 		Object obj = e.getSource();
 		
 		if(obj == btnBack) {
+			certifiFlagId = false;	//아이디 찾기 인증완료 초기화
+			certifiFlagPw = false;	//비밀번호 찾기 인증완료 초기화
+			sendCertifiFlagId = 1;	//아이디 찾기 전송하기로 변경
+			sendCertifiFlagPw = 1;	//비밀번호 찾기 전송하기로 변경
+			
 			login.setVisible(true);	//로그인 화면 활성화
 			setVisible(false);	//아이디/비밀번호 찾기 화면 비활성화
 		} else if(obj == btnSendId && sendCertifiFlagId == 1 && Boilerplate.phonNumValidation(tfPhonNumId.getText())) {
