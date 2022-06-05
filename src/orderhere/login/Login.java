@@ -17,7 +17,6 @@ import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -26,10 +25,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import orderhere.common.Boilerplate;
 import orderhere.common.DB;
 import orderhere.common.Encryption;
 import orderhere.common.UsersData;
-import orderhere.common.Boilerplate;
 import orderhere.start.MainFrame;
 
 /**
@@ -337,9 +336,17 @@ public class Login extends JPanel implements ActionListener, FocusListener, KeyL
 							errorHandling();
 						}
 					} catch (SQLException e1) {
-						System.out.println("(Login) 예외발생 : DB 조회에 실패했습니다.");
+						System.out.println("(Login) 예외발생 : 회원 조회에 실패했습니다.");
 						errorHandling();
 						e1.printStackTrace();
+					} finally {
+						try {
+							rs.close();
+							System.out.println("(Login) ResultSet 객체 종료");
+						} catch (SQLException e1) {
+							System.out.println("(Login) 예외발생 : ResultSet 객체 종료에 실패했습니다.");
+							e1.printStackTrace();
+						}
 					}
 				} else {
 					errorHandling();
@@ -430,16 +437,18 @@ public class Login extends JPanel implements ActionListener, FocusListener, KeyL
 		if(obj == btnLblJoin) {	//회원가입 라벨버튼 클릭시
 			btnLblJoin.setForeground(Color.BLACK);
 			
-			join = new Join(this);
+			join = new Join(this, mainFrame);
 			mainFrame.add(join, BorderLayout.CENTER);
+			mainFrame.setTitle("Join");
 	        join.setVisible(true);	//회원가입 화면 활성화
 			setVisible(false);		//로그인 화면 비활성화
 			
 		} else if(obj == btnLblFind) {	//아이디/비밀번호 찾기 라벨버튼 클릭시
 			btnLblFind.setForeground(Color.BLACK);
 			
-			find = new Find(this);
+			find = new Find(this, mainFrame);
 			mainFrame.add(find, BorderLayout.CENTER);
+			mainFrame.setTitle("ID/PW Find");
 			find.setVisible(true);	//아이디/비밀번호 찾기 화면 활성화
 			setVisible(false);		//로그인 화면 비활성화
 		}

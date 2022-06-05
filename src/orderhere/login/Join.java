@@ -15,9 +15,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.sql.ResultSet;
-import java.sql.SQLDataException;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -34,6 +32,7 @@ import javax.swing.border.EmptyBorder;
 import orderhere.common.Boilerplate;
 import orderhere.common.DB;
 import orderhere.common.Encryption;
+import orderhere.start.MainFrame;
 
 /**
 * @packageName	: orderhere.login
@@ -48,8 +47,12 @@ import orderhere.common.Encryption;
 * 2022.05.21		TaeJeong Park		레이아웃 구현 완료
 * 2022.05.22		TaeJeong Park		기능 구현 완료
 * 2022.06.02		TaeJeong Park		화면 전환 방식 변경
+* 2022.06.05		TaeJeong Park		회원가입시 포인트 테이블 생성
 */
 public class Join extends JPanel implements ActionListener, FocusListener, KeyListener, ItemListener {
+	
+	private Login login = null;				//로그인 패널 객체
+	private MainFrame mainFrame = null;		//메인 프레임 객체
 	
 	private String usersInId;				//사용자에게 입력 받은 아이디
 	private String usersInPw;				//사용자에게 입력 받은 비밀번호
@@ -57,7 +60,6 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 	private String usersInBirthday; 		//사용자에게 입력 받은 생년월일
 	private String usersInPhoneNum; 		//사용자에게 입력 받은 휴대폰번호
 	
-	private Login login = null;				//로그인 패널 객체
 	private JTextField tfId;				//아이디 입력 텍스트필드
 	private JButton btnOverlapChk;			//중복확인 버튼
 	private JPasswordField tfPw;			//비밀번호 입력 텍스트필드
@@ -102,12 +104,13 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 	
 	
 	//회원가입 화면
-	public Join(Login login) {
+	public Join(Login login, MainFrame mainFrame) {
 		
         setLayout(new BorderLayout());
         setBackground(new Color(1, 168, 98));
         
 		this.login = login;
+		this.mainFrame = mainFrame;
         
 		makeImageIcon();	//이미지 아이콘 생성
 		
@@ -437,6 +440,15 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 		return pwStr;
 		
 	}
+	
+	//로그인 화면으로 전환
+	private void loginPanelTransition() {
+		
+		mainFrame.setTitle("Login");
+		login.setVisible(true);	//로그인 화면 활성화
+		setVisible(false);		//회원가입 화면 비활성화
+		
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -455,14 +467,14 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 				try {
 					if(rs.next()) {
 						System.out.println("(Join) 아이디 중복");
-						JOptionPane.showMessageDialog(login, "이미 사용중인 아이디입니다.\n다시 시도해주세요.", "아이디 중복", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(mainFrame, "이미 사용중인 아이디입니다.\n다시 시도해주세요.", "아이디 중복", JOptionPane.ERROR_MESSAGE);
 						
 						btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
 						setPH(tfId);	//PlaceHolder 세팅
 					} else {
 						System.out.println("(Join) 아이디 사용가능");
 						
-						int result = JOptionPane.showConfirmDialog(login, "사용 가능한 아이디입니다.\n" + usersInId + "로 사용하시겠습니까?", "아이디 사용 가능", JOptionPane.YES_NO_OPTION);
+						int result = JOptionPane.showConfirmDialog(mainFrame, "사용 가능한 아이디입니다.\n" + usersInId + "로 사용하시겠습니까?", "아이디 사용 가능", JOptionPane.YES_NO_OPTION);
 						
 						if(result == JOptionPane.YES_OPTION) {
 							tfId.setEnabled(false);	//아이디 텍스트필드 비활성화
@@ -475,11 +487,19 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 						}
 					}
 				} catch (SQLException e1) {
-					System.out.println("(Join) 예외발생 : DB 조회에 실패했습니다.");
+					System.out.println("(Join) 예외발생 : 중복 아이디 조회에 실패했습니다.");
 					e1.printStackTrace();
+				} finally {
+					try {
+						rs.close();
+						System.out.println("(Join) ResultSet 객체 종료");
+					} catch (SQLException e1) {
+						System.out.println("(Join) 예외발생 : ResultSet 객체 종료에 실패했습니다.");
+						e1.printStackTrace();
+					}
 				}
 			} else {
-				JOptionPane.showMessageDialog(login, "사용할 수 없는 아이디입니다.\n아이디는 영문, 숫자 조합의 5자리 이상 12자리 이하로 사용 가능하며,\n첫 자리에 숫자를 사용할 수 없습니다.\n다시 시도해주세요.", "규칙 위배", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "사용할 수 없는 아이디입니다.\n아이디는 영문, 숫자 조합의 5자리 이상 12자리 이하로 사용 가능하며,\n첫 자리에 숫자를 사용할 수 없습니다.\n다시 시도해주세요.", "규칙 위배", JOptionPane.ERROR_MESSAGE);
 				
 				btnOverlapChk.setEnabled(false);	//중복확인 버튼 비활성화
 				setPH(tfId);	//PlaceHolder 세팅
@@ -490,7 +510,7 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 			System.out.println("(Join) 인증번호 발송");
 			
 			certifiNum = Boilerplate.certificationNum();	//6자리 숫자 난수 생성
-			JOptionPane.showMessageDialog(login, "인증번호는 [" + certifiNum + "]입니다.", tfPhonNum.getText() + " 문자", JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showMessageDialog(mainFrame, "인증번호는 [" + certifiNum + "]입니다.", tfPhonNum.getText() + " 문자", JOptionPane.PLAIN_MESSAGE);
 			
 			//인증하기 버튼으로 변경
 			sendCertifiFlag = 2;
@@ -509,7 +529,7 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 			if(certifiNum == Integer.parseInt(tfCertifiNum.getText())) {
 				System.out.println("(Join) 인증완료");
 				
-				JOptionPane.showMessageDialog(login, "인증이 완료되었습니다.", "인증 완료", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "인증이 완료되었습니다.", "인증 완료", JOptionPane.PLAIN_MESSAGE);
 				
 				if(countThread.isAlive()) countThread.interrupt();		//카운트 쓰레드 종료
 				
@@ -522,7 +542,7 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 			} else {
 				System.out.println("(Join) 인증실패");
 				
-				JOptionPane.showMessageDialog(login, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
 				
 				if(countThread.isAlive()) countThread.interrupt();		//카운트 쓰레드 종료
 				
@@ -543,8 +563,7 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 			sendCertifiFlag = 1;	//전송하기로 변경
 			certifiFlag = false;	//인증완료 초기화
 			
-			login.setVisible(true);	//로그인 화면 활성화
-			setVisible(false);	//회원가입 화면 비활성화
+			loginPanelTransition();	//로그인 화면으로 전환
 		} else if(obj == btnOk) {
 			
 			usersInId = tfId.getText();					//입력받은 아이디 저장
@@ -567,41 +586,61 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 				
 				if(usersInPw.equals(pw2)) {	//비밀번호와 비밀번호 확인 일치여부 검사
 					if(Boilerplate.pwValidation(usersInPw)) {
-						String pwSalt = Encryption.Salt();	//SHA512 암호화에 사용할 난수 생성
-						usersInPw = Encryption.SHA512(usersInPw, pwSalt);	//입력받은 비밀번호를 Salt 값으로 SHA512 암호화
 						
-						String sqlInsert = "INSERT INTO ALLNIGHT.USERS (USERSID, USERSPW, USERSNAME, USERSBIRTHDAY, USERSPHONNUM, USERSCASH, USERSPWSALT)"
-								+ " VALUES('" + usersInId + "', '" + usersInPw + "', '" + usersInName + "', '" + usersInBirthday + "', '" + usersInPhoneNum + "', 0, '" + pwSalt + "')";	//회원정보 Insert문 생성
-						DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
+						int pointId;
+						ResultSet rs = DB.getResult("select max(pointid) from point");
 						
-						LocalDateTime nowDateTime = LocalDateTime.now();	//현재 날짜와 시간
-						String formatedDateTime = nowDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-						
-						sqlInsert = "ALTER session set NLS_DATE_FORMAT = 'yyyy-mm-dd hh24:mi:ss'";	//날짜 포맷 설정
-						DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
-						
-						sqlInsert = "INSERT INTO ALLNIGHT.POINT (POINTID, USERSID, ORDERDATE, POINTSTATUS, POINTVALUE, POINT)"
-								+ "VALUES(1, '" + usersInId + "', '" + formatedDateTime + "', '세팅', 0, 0)";		//회원 포인트 Insert문 생성
-						DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
-						
-						JOptionPane.showMessageDialog(login, "회원가입이 완료되었습니다.", "회원가입 완료", JOptionPane.PLAIN_MESSAGE);
-						
-						login.setVisible(true);	//로그인 화면 활성화
-						setVisible(false);	//회원가입 화면 비활성화
+						try {
+							if(rs.next()) pointId = rs.getInt("MAX(POINTID)") + 1;
+							else pointId = 1;
+							
+							String pwSalt = Encryption.Salt();	//SHA512 암호화에 사용할 난수 생성
+							usersInPw = Encryption.SHA512(usersInPw, pwSalt);	//입력받은 비밀번호를 Salt 값으로 SHA512 암호화
+							
+							String sqlInsert = "INSERT INTO ALLNIGHT.USERS (USERSID, USERSPW, USERSNAME, USERSBIRTHDAY, USERSPHONNUM, USERSCASH, USERSPWSALT)"
+									+ " VALUES('" + usersInId + "', '" + usersInPw + "', '" + usersInName + "', '" + usersInBirthday + "', '" + usersInPhoneNum + "', 0, '" + pwSalt + "')";	//회원정보 Insert문 생성
+							DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
+							
+							LocalDateTime nowDateTime = LocalDateTime.now();	//현재 날짜와 시간
+							String formatedDateTime = nowDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+							
+							sqlInsert = "INSERT INTO ALLNIGHT.POINT (POINTID, USERSID, ORDERDATE, POINTSTATUS, POINTVALUE, POINT)"
+									+ "VALUES(" + pointId + ", '" + usersInId + "', TO_DATE('" + formatedDateTime + "', 'yyyy-mm-dd hh24:mi:ss'), '세팅', 0, 0)";		//회원 포인트 Insert문 생성
+							DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
+							
+							JOptionPane.showMessageDialog(mainFrame, "회원가입이 완료되었습니다.", "회원가입 완료", JOptionPane.PLAIN_MESSAGE);
+							
+							overlapFlag = false;	//중복확인 초기화
+							sendCertifiFlag = 1;	//전송하기로 변경
+							certifiFlag = false;	//인증완료 초기화
+							
+							loginPanelTransition();	//로그인 화면으로 전환
+						} catch (SQLException e1) {
+							System.out.println("(Join) 예외발생 : Max 포인트아이디 조회에 실패했습니다.");
+							e1.printStackTrace();
+						} finally {
+							try {
+								rs.close();
+								System.out.println("(Join) ResultSet 객체 종료");
+							} catch (SQLException e1) {
+								System.out.println("(Join) 예외발생 : ResultSet 객체 종료에 실패했습니다.");
+								e1.printStackTrace();
+							}
+						}
 					} else {
-						JOptionPane.showMessageDialog(login, "사용할 수 없는 비밀번호입니다.\n비밀번호는 영문, 숫자, 특수문자 조합으로\n최소 8자리 이상, 최대 15자리 이하로 사용 가능합니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(mainFrame, "사용할 수 없는 비밀번호입니다.\n비밀번호는 영문, 숫자, 특수문자 조합으로\n최소 8자리 이상, 최대 15자리 이하로 사용 가능합니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
 						
 						setPwPH(tfPw2);	//비밀번호 확인 텍스트필드 초기화
 						btnOk.setEnabled(false);	//확인 버튼 비활성화
 					}
 				} else {
-					JOptionPane.showMessageDialog(login, "비밀번호와 비밀번호 확인이 일치하지 않습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(mainFrame, "비밀번호와 비밀번호 확인이 일치하지 않습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
 					
 					setPwPH(tfPw2);	//비밀번호 확인 텍스트필드 초기화
 					btnOk.setEnabled(false);	//확인 버튼 비활성화
 				}
 			} else {
-				JOptionPane.showMessageDialog(login, "정확하게 입력되지 않은 항목이 있습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "정확하게 입력되지 않은 항목이 있습니다.\n다시 시도해주세요.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		

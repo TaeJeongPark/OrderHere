@@ -17,12 +17,10 @@ import java.awt.event.KeyListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -31,9 +29,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import orderhere.common.Boilerplate;
 import orderhere.common.DB;
 import orderhere.common.Encryption;
-import orderhere.common.Boilerplate;
+import orderhere.start.MainFrame;
 
 /**
 * @packageName	: orderhere.login
@@ -52,6 +51,8 @@ import orderhere.common.Boilerplate;
 public class Find extends JPanel implements ActionListener, FocusListener, KeyListener, ItemListener {
 
 	private Login login = null;				//로그인 패널 객체
+	private MainFrame mainFrame = null;		//메인 프레임 객체
+	
 	private JButton btnBack;				//뒤로가기 버튼
 	private JTabbedPane tabPane;			//아이디/비밀번호 탭 팬
 	
@@ -116,12 +117,13 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 	
 	
 	//아이디/비밀번호 찾기 화면
-	public Find(Login login) {
+	public Find(Login login, MainFrame mainFrame) {
 		
 		setLayout(new BorderLayout());
         setBackground(new Color(1, 168, 98));
 		
 		this.login = login;
+		this.mainFrame = mainFrame;
         
 		tabPane = new JTabbedPane(JTabbedPane.TOP);	//탭 팬 생성
 		
@@ -566,18 +568,13 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 			cbMonth.setSelectedIndex(0);
 			cbDay.setSelectedIndex(0);
 
-			//전송하기 버튼으로 변경
-			sendCertifiFlagId = 1;
-			btnSendId.setIcon(icSendET);
-			btnSendId.setRolloverIcon(icSendRo);
-			btnSendId.setPressedIcon(icSendPr);
-			btnSendId.setEnabled(false);	//전송하기 버튼 비활성화
+			chageSend();
 			
 			btnIdFind.setEnabled(false);	//아이디 찾기 버튼 비활성화
 			
 			certifiFlagId = false;	//인증 완료 상태 변경
 			
-			JOptionPane.showMessageDialog(login, "입력하신 정보와 일치하는 회원이 없습니다.", "아이디 찾기 실패", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(mainFrame, "입력하신 정보와 일치하는 회원이 없습니다.", "아이디 찾기 실패", JOptionPane.ERROR_MESSAGE);
 			tfNameId.requestFocus();
 			
 			System.out.println("(ID Find) 아이디 찾기 실패");
@@ -586,21 +583,54 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 			setPH(tfPhonNumPw);
 			setPH(tfCertifiNumPw);
 			
-			//전송하기 버튼으로 변경
-			sendCertifiFlagPw = 1;
-			btnSendPw.setIcon(icSendET);
-			btnSendPw.setRolloverIcon(icSendRo);
-			btnSendPw.setPressedIcon(icSendPr);
-			btnSendPw.setEnabled(false);	//전송하기 버튼 비활성화
+			chageSend();	//전송하기 버튼으로 변경
 			
 			btnPwFind.setEnabled(false);	//비밀번호 찾기 버튼 비활성화
 			
 			certifiFlagPw = false;	//인증 완료 상태 변경
 			
-			JOptionPane.showMessageDialog(login, "입력하신 정보와 일치하는 회원이 없습니다.", "비밀번호 찾기 실패", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(mainFrame, "입력하신 정보와 일치하는 회원이 없습니다.", "비밀번호 찾기 실패", JOptionPane.ERROR_MESSAGE);
 			tfIdPw.requestFocus();
 			
 			System.out.println("(PW Find) 비밀번호 찾기 실패");
+		}
+		
+	}
+
+	//전송하기 버튼으로 변경
+	private void chageSend() {
+		
+		if(idPwFlag == 1) {	//아이디 찾기
+			sendCertifiFlagId = 1;
+			btnSendId.setIcon(icSendET);
+			btnSendId.setRolloverIcon(icSendRo);
+			btnSendId.setPressedIcon(icSendPr);
+			btnSendId.setEnabled(false);	//전송하기 버튼 비활성화			
+		} else if(idPwFlag == 2) {	//비밀번호 찾기
+			sendCertifiFlagPw = 1;
+			btnSendPw.setIcon(icSendET);
+			btnSendPw.setRolloverIcon(icSendRo);
+			btnSendPw.setPressedIcon(icSendPr);
+			btnSendPw.setEnabled(false);	//전송하기 버튼 비활성화
+		}
+		
+	}
+	
+	//인증하기 버튼으로 변경
+	private void changeCertifi() {
+		
+		if(idPwFlag == 1) {	//아이디 찾기
+			sendCertifiFlagId = 2;
+			btnSendId.setIcon(icCertifiedET);
+			btnSendId.setRolloverIcon(icCertifiedRo);
+			btnSendId.setPressedIcon(icCertifiedPr);
+			btnSendId.setEnabled(false);	//인증하기 버튼 비활성화
+		} else if(idPwFlag == 2) {	//비밀번호 찾기
+			sendCertifiFlagPw = 2;
+			btnSendPw.setIcon(icCertifiedET);
+			btnSendPw.setRolloverIcon(icCertifiedRo);
+			btnSendPw.setPressedIcon(icCertifiedPr);
+			btnSendPw.setEnabled(false);	//인증하기 버튼 비활성화
 		}
 		
 	}
@@ -620,6 +650,15 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 		return pwStr;
 		
 	}
+	
+	//로그인 화면으로 전환
+	private void loginPanelTransition() {
+		
+		mainFrame.setTitle("Login");
+		login.setVisible(true);	//로그인 화면 활성화
+		setVisible(false);		//아이디/비밀번호 찾기 화면 비활성화
+		
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -632,22 +671,16 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 			sendCertifiFlagId = 1;	//아이디 찾기 전송하기로 변경
 			sendCertifiFlagPw = 1;	//비밀번호 찾기 전송하기로 변경
 			
-			login.setVisible(true);	//로그인 화면 활성화
-			setVisible(false);	//아이디/비밀번호 찾기 화면 비활성화
+			loginPanelTransition();	//로그인 화면으로 전환
 		} else if(obj == btnSendId && sendCertifiFlagId == 1 && Boilerplate.phonNumValidation(tfPhonNumId.getText())) {
 			tfPhonNumId.setEnabled(false);	//휴대폰번호 텍스트필드 비활성화
 			
 			System.out.println("(ID Find) 인증번호 발송");
 			
 			certifiNum = Boilerplate.certificationNum();	//6자리 숫자 난수 생성
-			JOptionPane.showMessageDialog(login, "인증번호는 [" + certifiNum + "]입니다.", tfPhonNumId.getText() + " 문자", JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showMessageDialog(mainFrame, "인증번호는 [" + certifiNum + "]입니다.", tfPhonNumId.getText() + " 문자", JOptionPane.PLAIN_MESSAGE);
 			
-			//인증하기 버튼으로 변경
-			sendCertifiFlagId = 2;
-			btnSendId.setIcon(icCertifiedET);
-			btnSendId.setRolloverIcon(icCertifiedRo);
-			btnSendId.setPressedIcon(icCertifiedPr);
-			btnSendId.setEnabled(false);	//인증하기 버튼 비활성화
+			changeCertifi();	//인증하기 버튼으로 변경
 			
 			idPwFlag = 1;
 			
@@ -661,7 +694,7 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 			if(certifiNum == Integer.parseInt(tfCertifiNumId.getText())) {
 				System.out.println("(ID Find) 인증완료");
 				
-				JOptionPane.showMessageDialog(login, "인증이 완료되었습니다.", "인증 완료", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "인증이 완료되었습니다.", "인증 완료", JOptionPane.PLAIN_MESSAGE);
 				
 				certifiFlagId= true;	//인증 완료 저장
 				if(countThread.isAlive()) countThread.interrupt();		//카운트 쓰레드 종료
@@ -671,19 +704,14 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 				
 				idFindBtnChk();	//아이디 찾기 버튼 활성화 조건 검사
 			} else {
-				JOptionPane.showMessageDialog(login, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
 				
 				if(countThread.isAlive()) countThread.interrupt();		//카운트 쓰레드 종료
 				
 				setPH(tfPhonNumId);		//아이디 찾기 휴대폰번호 텍스트필드 Placeholder 세팅
 				setPH(tfCertifiNumId);	//아이디 찾기 인증번호 텍스트필드 Placeholder 세팅
 				
-				//전송하기 버튼으로 변경
-				sendCertifiFlagId = 1;
-				btnSendId.setIcon(icSendET);
-				btnSendId.setRolloverIcon(icSendRo);
-				btnSendId.setPressedIcon(icSendPr);
-				btnSendId.setEnabled(false);	//전송하기 버튼 비활성화
+				chageSend();
 			}
 		} else if(obj == btnIdFind) {
 			usersInName = tfNameId.getText();	//입력받은 이름 저장
@@ -718,19 +746,31 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 						}
 						message = message + " 입니다.";
 						
-						JOptionPane.showMessageDialog(login, message, "아이디 찾기 완료", JOptionPane.PLAIN_MESSAGE);
+						JOptionPane.showMessageDialog(mainFrame, message, "아이디 찾기 완료", JOptionPane.PLAIN_MESSAGE);
 						
 						System.out.println("(ID Find) 회원 조회(ID Find) 성공");
 						
-						login.setVisible(true);	//로그인 화면 활성화
-						setVisible(false);	//아이디/비밀번호 찾기 화면 비활성화
+						certifiFlagId = false;	//아이디 찾기 인증완료 초기화
+						certifiFlagPw = false;	//비밀번호 찾기 인증완료 초기화
+						sendCertifiFlagId = 1;	//아이디 찾기 전송하기로 변경
+						sendCertifiFlagPw = 1;	//비밀번호 찾기 전송하기로 변경
+						
+						loginPanelTransition();	//로그인 화면으로 전환
 					} else {
 						errorHandling();
 					}
 				} catch (SQLException e1) {
-					System.out.println("(ID Find) 예외발생 : DB 조회에 실패했습니다.");
+					System.out.println("(ID Find) 예외발생 : 회원 조회에 실패했습니다.");
 					errorHandling();
 					e1.printStackTrace();
+				} finally {
+					try {
+						rs.close();
+						System.out.println("(ID Find) ResultSet 객체 종료");
+					} catch (SQLException e1) {
+						System.out.println("(ID Find) 예외발생 : ResultSet 객체 종료에 실패했습니다.");
+						e1.printStackTrace();
+					}
 				}
 			} else {
 				errorHandling();
@@ -741,14 +781,9 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 			System.out.println("(PW Find) 인증번호 발송");
 			
 			certifiNum = Boilerplate.certificationNum();	//6자리 숫자 난수 생성
-			JOptionPane.showMessageDialog(login, "인증번호는 [" + certifiNum + "]입니다.", tfPhonNumPw.getText() + " 문자", JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showMessageDialog(mainFrame, "인증번호는 [" + certifiNum + "]입니다.", tfPhonNumPw.getText() + " 문자", JOptionPane.PLAIN_MESSAGE);
 			
-			//인증하기 버튼으로 변경
-			sendCertifiFlagPw = 2;
-			btnSendPw.setIcon(icCertifiedET);
-			btnSendPw.setRolloverIcon(icCertifiedRo);
-			btnSendPw.setPressedIcon(icCertifiedPr);
-			btnSendPw.setEnabled(false);	//인증하기 버튼 비활성화
+			changeCertifi();	//인증하기 버튼으로 변경
 			
 			//인증시간 카운트
 			countThread = new CountThread(3, lblCountPw, btnSendPw, tfPhonNumPw, tfCertifiNumPw);	//카운트 스레드 생성
@@ -760,7 +795,7 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 			if(certifiNum == Integer.parseInt(tfCertifiNumPw.getText())) {
 				System.out.println("(PW Find) 인증완료");
 				
-				JOptionPane.showMessageDialog(login, "인증이 완료되었습니다.", "인증 완료", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "인증이 완료되었습니다.", "인증 완료", JOptionPane.PLAIN_MESSAGE);
 				
 				certifiFlagPw = true;	//인증 완료 저장
 				if(countThread.isAlive()) countThread.interrupt();		//카운트 쓰레드 종료
@@ -772,19 +807,14 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 				
 				pwFindBtnChk();	//비밀번호 찾기 버튼 활성화 조건 검사
 			} else {
-				JOptionPane.showMessageDialog(login, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "인증번호가 일치하지 않습니다.\n다시 시도해주세요.", "인증 실패", JOptionPane.ERROR_MESSAGE);
 				
 				if(countThread.isAlive()) countThread.interrupt();		//카운트 쓰레드 종료
 				
 				setPH(tfPhonNumPw);		//아이디 찾기 휴대폰번호 텍스트필드 Placeholder 세팅
 				setPH(tfCertifiNumPw);	//아이디 찾기 인증번호 텍스트필드 Placeholder 세팅
 				
-				//전송하기 버튼으로 변경
-				sendCertifiFlagPw = 1;
-				btnSendPw.setIcon(icSendET);
-				btnSendPw.setRolloverIcon(icSendRo);
-				btnSendPw.setPressedIcon(icSendPr);
-				btnSendPw.setEnabled(false);	//전송하기 버튼 비활성화
+				chageSend();	//전송하기 버튼으로 변경
 			}
 		} else if(obj == btnPwFind) {
 			usersInId = tfIdPw.getText();				//입력받은 아이디 저장
@@ -807,9 +837,17 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 						errorHandling();
 					}
 				} catch (SQLException e1) {
-					System.out.println("(PW Find) 예외발생 : DB 조회에 실패했습니다.");
+					System.out.println("(PW Find) 예외발생 : 회원 조회에 실패했습니다.");
 					errorHandling();
 					e1.printStackTrace();
+				} finally {
+					try {
+						rs.close();
+						System.out.println("(PW Find) ResultSet 객체 종료");
+					} catch (SQLException e1) {
+						System.out.println("(PW Find) 예외발생 : ResultSet 객체 종료에 실패했습니다.");
+						e1.printStackTrace();
+					}
 				}
 			} else {
 				errorHandling();
@@ -830,18 +868,22 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 					String sqlUpdate = "UPDATE USERS SET USERSPW = '" + usersInPw + "', USERSPWSALT = '" + pwSalt + "' where USERSID = '" + usersInId + "'";	//회원정보 Insert문 생성
 					DB.executeSQL(sqlUpdate);	//DB로 Update문 전송
 					
-					JOptionPane.showMessageDialog(login, "비밀번호 변경이 완료되었습니다.", "비밀번호 변경 완료", JOptionPane.PLAIN_MESSAGE);
+					JOptionPane.showMessageDialog(mainFrame, "비밀번호 변경이 완료되었습니다.", "비밀번호 변경 완료", JOptionPane.PLAIN_MESSAGE);
 					
-					login.setVisible(true);	//로그인 화면 활성화
-					setVisible(false);	//아이디/비밀번호 찾기 화면 비활성화
+					certifiFlagId = false;	//아이디 찾기 인증완료 초기화
+					certifiFlagPw = false;	//비밀번호 찾기 인증완료 초기화
+					sendCertifiFlagId = 1;	//아이디 찾기 전송하기로 변경
+					sendCertifiFlagPw = 1;	//비밀번호 찾기 전송하기로 변경
+					
+					loginPanelTransition();	//로그인 화면으로 전환
 				} else {
-					JOptionPane.showMessageDialog(login, "사용할 수 없는 비밀번호입니다.\n비밀번호는 영문, 숫자, 특수문자 조합으로\n최소 8자리 이상, 최대 15자리 이하로 사용 가능합니다.\n다시 시도해주세요.", "비밀번호 변경 실패", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(mainFrame, "사용할 수 없는 비밀번호입니다.\n비밀번호는 영문, 숫자, 특수문자 조합으로\n최소 8자리 이상, 최대 15자리 이하로 사용 가능합니다.\n다시 시도해주세요.", "비밀번호 변경 실패", JOptionPane.ERROR_MESSAGE);
 					
 					setPH(tfNewPwPw);	//새 비밀번호 텍스트필드 Placeholder 세팅
 					setPH(tfNewPw2Pw);	//새 비밀번호 확인 텍스트필드 Placeholder 세팅
 				}
 			} else {
-				JOptionPane.showMessageDialog(login, "새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.\n다시 시도해주세요.", "비밀번호 변경 실패", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.\n다시 시도해주세요.", "비밀번호 변경 실패", JOptionPane.ERROR_MESSAGE);
 				
 				setPH(tfNewPwPw);	//새 비밀번호 텍스트필드 Placeholder 세팅
 				setPH(tfNewPw2Pw);	//새 비밀번호 확인 텍스트필드 Placeholder 세팅
