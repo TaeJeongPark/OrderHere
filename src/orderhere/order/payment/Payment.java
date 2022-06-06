@@ -2,30 +2,23 @@ package orderhere.order.payment;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Calendar;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import orderhere.order.CommonPanel;
-import orderhere.order.Main;
 import orderhere.order.cart.CartData;
 import orderhere.order.db.DB;
 import orderhere.order.orderdetails.OrderDetails;
@@ -46,12 +39,11 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 		private CartData cd;
 		private JButton btnReset;
 		private JButton btnApply;
-		private JTextArea ta;
 		private JLabel lblDToPay;
 		private JTextField tfPoint;
 		private JButton btnOrder;
 		private int cartnum;
-		private int inputPoint;
+		private int inputPoint=0;
 		private int[] cartidisSameCart;
 		
 		public Payment(CartData cd) 
@@ -112,7 +104,6 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 			
 			pSelectedMenu.setBackground(Color.WHITE);
 			
-			ta = new JTextArea();
 			
 			JScrollPane jsp = new JScrollPane(pSelectedMenu, 
 					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -309,8 +300,12 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 					JOptionPane.showMessageDialog(null, "캐시가 부족합니다", "캐시가 부족합니다", JOptionPane.ERROR_MESSAGE);
 				}else if(iUsersCash>=iToPay) 
 				{
-					pay();
-					CommonPanel.redraw(new OrderDetails(cd.getCartidisSameCart()[0]));
+					int c = JOptionPane.showConfirmDialog(null, "주문 하시겠습니까?", "주문 확인", JOptionPane.YES_NO_OPTION);
+					if(c==JOptionPane.YES_NO_OPTION) {
+						pay();
+						JOptionPane.showMessageDialog(null, "주문이 완료되었습니다.", "주문 완료", JOptionPane.ERROR_MESSAGE);
+						CommonPanel.redraw(new OrderDetails(cd.getCartidisSameCart()[0]));
+					}
 				}
 			}
 				
@@ -321,7 +316,8 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 			
 			ResultSet rs = null;
 			
-			DB.executeSQL("update users set usersCash="+(iUsersCash-iToPay)+" where usersid='"+usersid+"'");
+			DB.executeSQL("update users set usersCash="+(iUsersCash-(iToPay-inputPoint))+" where usersid='"+usersid+"'"); 
+	
 			
 			int pointid = 0;
 			try {
@@ -344,7 +340,7 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 				System.out.println("날짜: 조회된 데이터가 없습니다.");
 				e.printStackTrace();
 			}
-			orderdate = "2022-05-29 12:31:46";
+//			orderdate = "2022-05-29 12:31:46";
 			int iGotPoint = (int)(Math.round(iToPay*0.01));
 			int iChangedUsersPoint = iUsersPoint+iGotPoint;
 			DB.executeSQL("insert into userspoint(usersid,pointid,orderdate,pointstatus,pointvalue,point) values ('"+
@@ -353,8 +349,8 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 			if(inputPoint>0) 
 			{
 				iChangedUsersPoint = (iUsersPoint+iGotPoint)-inputPoint;
-				DB.executeSQL("insert into userspoint(usersid,pointid,orderdate,pointstatus,pointvalue,point) values ("+
-						usersid+","+(pointid+1)+","+orderdate+",'차감',"+inputPoint+","+iChangedUsersPoint+")");
+				DB.executeSQL("insert into userspoint(usersid,pointid,orderdate,pointstatus,pointvalue,point) values ('"+
+						usersid+"',"+(pointid+1)+",'"+orderdate+"','차감',"+inputPoint+","+iChangedUsersPoint+")");
 			}
 			
 			int orderid = 0;
@@ -389,7 +385,6 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 			try {
 				DB.conn.commit();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}			
 			
@@ -398,7 +393,6 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			// TODO Auto-generated method stub
 			
 		}
 

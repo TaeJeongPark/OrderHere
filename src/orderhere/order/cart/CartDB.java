@@ -8,7 +8,7 @@ import orderhere.order.db.DB;
 
 public class CartDB {
 	
-	private int cartidIsSameCart = 8;
+	private int cartidIsSameCart = 1;
 	
 	private int cartid[];
 
@@ -102,7 +102,6 @@ public class CartDB {
 			DB.executeSQL("delete from cart where usersid='"+usersid+"' and cartidIsSameCart="+cartidIsSameCart);
 			DB.conn.commit();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -112,7 +111,6 @@ public class CartDB {
 			DB.executeSQL("delete from cart where usersid='"+usersid+"' and cartidIsSameCart="+cartidIsSameCart+" and menuid="+menuid);
 			DB.conn.commit();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

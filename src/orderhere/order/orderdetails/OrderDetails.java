@@ -2,20 +2,14 @@ package orderhere.order.orderdetails;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import orderhere.order.CommonPanel;
 import orderhere.order.db.DB;
@@ -25,7 +19,6 @@ public class OrderDetails extends JPanel{
 		private String usersid = "aa1234";
 		private int iIsSameCart;
 	
-		private int iOrderId;
 		private String sOrderDate;
 		private int iStoreId;
 		private String sStoreName;
@@ -143,6 +136,7 @@ public class OrderDetails extends JPanel{
 				lblMenuName[i].setFont(new Font("맑은 고딕",Font.BOLD,18));
 				pOrderedMenuList[i].add(lblMenuName[i]);
 				
+				System.out.print(sarrMenuNames[i]);
 				lblMenuQuantity[i] = new JLabel("x"+ iarrCartQuantities[i]);
 				lblMenuQuantity[i].setSize(42,27);
 				lblMenuQuantity[i].setLocation(42+368, 0);
@@ -180,41 +174,42 @@ public class OrderDetails extends JPanel{
 			lblSum.setFont(new Font("맑은 고딕",Font.BOLD,22));
 			pBottom.add(lblSum);
 			
+			JLabel lblPay = new JLabel("총 주문 금액");
+			lblPay.setSize(123,21);
+			lblPay.setLocation(42, 78);//78+21+21+15
+			lblPay.setFont(new Font("맑은 고딕",Font.BOLD,18));
+			pBottom.add(lblPay);
+			
 			JLabel lblUsagePoint = new JLabel("사용 포인트");
 			lblUsagePoint.setSize(123,21);
-			lblUsagePoint.setLocation(42, 78);
+			lblUsagePoint.setLocation(42, 78+21+8);//78
 			lblUsagePoint.setFont(new Font("맑은 고딕",Font.BOLD,18));
 			pBottom.add(lblUsagePoint);
 			
 			JLabel lblUsageCash = new JLabel("사용 캐시");
 			lblUsageCash.setSize(123,21);
-			lblUsageCash.setLocation(42, 78+21+8);
+			lblUsageCash.setLocation(42, 78+21+21+15);
 			lblUsageCash.setFont(new Font("맑은 고딕",Font.BOLD,18));
 			pBottom.add(lblUsageCash);
-			
-			JLabel lblPay = new JLabel("총 결제 금액");
-			lblPay.setSize(123,21);
-			lblPay.setLocation(42, 78+21+21+15);
-			lblPay.setFont(new Font("맑은 고딕",Font.BOLD,18));
-			pBottom.add(lblPay);
+
+			JLabel lblPayData = new JLabel(CommonPanel.toAddCommaAtPrice(iOrderSum)+" 원");
+			lblPayData.setSize(123,21);
+			lblPayData.setLocation(42+500, 78);
+			lblPayData.setFont(new Font("맑은 고딕",Font.BOLD,18));
+			pBottom.add(lblPayData);
 			
 			JLabel lblUsagePointData = new JLabel(CommonPanel.toAddCommaAtPrice(iOrderUsagePoint)+"P");
 			lblUsagePointData.setSize(123,21);
-			lblUsagePointData.setLocation(42+500, 78);
+			lblUsagePointData.setLocation(42+500, 78+21+8);
 			lblUsagePointData.setFont(new Font("맑은 고딕",Font.BOLD,18));
 			pBottom.add(lblUsagePointData);
 			
 			JLabel lblUsageCashData = new JLabel(CommonPanel.toAddCommaAtPrice(iOrderUsageCash)+" 원");
 			lblUsageCashData.setSize(123,21);
-			lblUsageCashData.setLocation(42+500, 78+21+8);
+			lblUsageCashData.setLocation(42+500, 78+21+21+15);
 			lblUsageCashData.setFont(new Font("맑은 고딕",Font.BOLD,18));
 			pBottom.add(lblUsageCashData);
 			
-			JLabel lblPayData = new JLabel(CommonPanel.toAddCommaAtPrice(iOrderSum)+" 원");
-			lblPayData.setSize(123,21);
-			lblPayData.setLocation(42+500, 78+21+21+15);
-			lblPayData.setFont(new Font("맑은 고딕",Font.BOLD,18));
-			pBottom.add(lblPayData);
 			
 			pOrderDetails.add(pBottom);
 			
@@ -236,7 +231,6 @@ public class OrderDetails extends JPanel{
 				try {
 					rs.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -266,7 +260,6 @@ public class OrderDetails extends JPanel{
 				try {
 					rs.close();
 				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -282,7 +275,6 @@ public class OrderDetails extends JPanel{
 				try {
 					rs.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				e1.printStackTrace();
@@ -306,6 +298,7 @@ public class OrderDetails extends JPanel{
 											rs.getString("cartsyrup")+"/"+
 											"x"+rs.getInt("cartsyrupnum")+"/"+
 											rs.getString("cartwhippedcream");
+						System.out.println(sarrMenuOptions[i]);
 					}
 				} catch (SQLException e) {
 					System.out.println("메뉴 옵션: 조회된 데이터가 없습니다.");
@@ -315,7 +308,6 @@ public class OrderDetails extends JPanel{
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -331,14 +323,12 @@ public class OrderDetails extends JPanel{
 						iarrMenuPrice[i] = rs.getInt("menuprice");
 					}
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

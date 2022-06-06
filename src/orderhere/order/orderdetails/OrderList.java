@@ -2,7 +2,6 @@ package orderhere.order.orderdetails;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -11,8 +10,6 @@ import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -66,7 +63,6 @@ public class OrderList extends JPanel implements MouseListener{
 				iListnum = rsOrders.getInt(1);
 				rsOrders.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -81,8 +77,6 @@ public class OrderList extends JPanel implements MouseListener{
 			lblOrderStore = new JLabel[iListnum];
 			lblOrderSum = new JLabel[iListnum];
 			
-			int iprev = 0;
-			int inext = 0;
 			rsOrders = DB.getResult("select distinct orderdate,storeid,ordersum,cartidissamecart from orders"
 					+ " where usersid='"+usersid+"' order by cartidissamecart desc");
 			try {
@@ -107,7 +101,6 @@ public class OrderList extends JPanel implements MouseListener{
 				}
 				rsOrders.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -128,6 +121,7 @@ public class OrderList extends JPanel implements MouseListener{
 			tfFrom.setSize(165,39);
 			tfFrom.setFont(new Font("맑은 고딕",Font.PLAIN,18));
 			tfFrom.setEditable(false);
+			tfFrom.addMouseListener(this);
 			p_body.add(tfFrom);
 			
 			JLabel lblFromTo = new JLabel("~");
@@ -143,6 +137,7 @@ public class OrderList extends JPanel implements MouseListener{
 			tfTo.setSize(165,39);
 			tfTo.setFont(new Font("맑은 고딕",Font.PLAIN,18));
 			tfTo.setEditable(false);
+			tfTo.addMouseListener(this);
 			p_body.add(tfTo);
 			
 			lblSearch = new JLabel(new ImageIcon("images/orderdetails/Btn_Search_EnabledTrue.png"));
@@ -273,6 +268,12 @@ public class OrderList extends JPanel implements MouseListener{
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			
+			if(e.getSource()==tfFrom||e.getSource()==tfTo||e.getSource()==lblSearch) 
+			{
+				JOptionPane.showMessageDialog(this, "서비스 준비중입니다.");
+			}
+			
 			for (int i = 0; i < iListnum; i++) {
 				if(e.getSource()==pListInner[i]) 
 				{

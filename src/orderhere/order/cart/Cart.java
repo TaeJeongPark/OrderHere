@@ -1,43 +1,28 @@
 package orderhere.order.cart;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.border.Border;
 
 import com.raven.event.EventTimePicker;
 import com.raven.swing.TimePicker;
 
 import orderhere.order.CommonPanel;
-import orderhere.order.Main;
-import orderhere.order.MainFrame;
-import orderhere.order.db.DB;
 import orderhere.order.payment.Payment;
 
 public class Cart extends JPanel implements ActionListener, EventTimePicker, ItemListener, MouseListener{
@@ -45,18 +30,22 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 		private String usersid = "aa1234";
 		private int storeid = 1;
 		
-		private TimePicker tp;
 		private JPanel p_body;
-		private JLabel lblReservedTime;
-		private CartMenuPanel[] cmps;
-		private CartDBData[] cdbdata;
+		
 		private CartDB db;
+		private CartDBData[] cdbdata;
+		private CartMenuPanel[] cmps;
+		
+		private TimePicker tp;
 		private int iTimeSelectedNum;
+		private JLabel lblReservedTime;
+		
 		private JButton btn_del;
 		private JButton btn_delall;
 		private JButton btn_more;
 		private JButton btn_reserve;
 		private JButton btn_pay;
+		
 		private ImageIcon iconmore;
 		private ImageIcon iconpay;
 		private ImageIcon iconreserveEnabledTrue;
@@ -65,19 +54,21 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 		private ImageIcon iconreservecancelEnabledTrue;
 		private ImageIcon iconreservecancelRollover;
 		private ImageIcon iconreservecancelPressed;
-		private JPanel cartpanel;
-		private JLabel lblSumPrice;
-		private JLabel lblCartNum;
-		private int sumPrice;
-		private int sumQuantity;
-		private int cartnum;
-		private JScrollPane jsp;
-		private JCheckBox[] ckb;
-		private String[] mouseEventText = {"Delete","DeleteAll","More","Paymeny","Reserve","ReservedCancel"};
 		private ImageIcon iconreserveEnabledFalse;
 		private ImageIcon iconpayEnabledFalse;
 		private ImageIcon icondelEnabledFalse;
 		private ImageIcon icondelallEnabledFalse;
+		
+		private JPanel cartpanel;
+		
+		private int sumPrice;
+		private int sumQuantity;
+		private int cartnum;
+		private JLabel lblSumPrice;
+		private JLabel lblCartNum;
+		
+		private JScrollPane jsp;
+		private JCheckBox[] ckb;
 
 		private String menuname;
 		private String option;
@@ -250,8 +241,8 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 			ckb = new JCheckBox[cartnum];
 			
 			cd = new CartData(cartnum);
-			//CartMenuPanel 패널 배열에 db데이터 추가 및 
-			//CartMenuPanel 패널 위치 조정, CartMenuPanel 패널을 cartpanel에 추가하는 코드
+			/* CartMenuPanel 패널 배열에 db데이터 추가 및 
+			 * CartMenuPanel 패널 위치 조정, CartMenuPanel 패널을 cartpanel에 추가하는 코드 */
 			for (int i = 0; i < cartnum; i++) {
 				cmps[i] = new CartMenuPanel();
 				ckb[i] = new JCheckBox();
@@ -416,19 +407,8 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 				
 				CommonPanel.redraw(new Payment(cd));
 
-//				Main.setActivatedFrame(new Payment(cd));
 			
 			}
-		}
-
-
-		private void redraw(JPanel panel) {
-			Main.getMf().remove(Main.getMf().getCurrentPanel());
-			Main.getMf().setCurrentPanel(panel);
-			Main.getMf().add(Main.getMf().getCurrentPanel());
-			Main.getMf().setVisible(false);
-			Main.getMf().setVisible(true);
-			
 		}
 
 		private void reLoad() {
@@ -463,7 +443,6 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 			
 			lblReservedTime.setText(CommonPanel.transformTimeFormat( tp.getSelectedTime())+" 예약");
 			lblReservedTime.setForeground(Color.RED);
-			//lblReservedTime.setSize(158,26);
 			lblReservedTime.setLocation(41+608+19+108+25,118);
 			lblReservedTime.setFont(new Font("맑은 고딕", Font.PLAIN, 22));
 		}
