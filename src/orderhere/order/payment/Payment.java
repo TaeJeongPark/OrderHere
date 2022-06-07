@@ -303,7 +303,7 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 					int c = JOptionPane.showConfirmDialog(null, "주문 하시겠습니까?", "주문 확인", JOptionPane.YES_NO_OPTION);
 					if(c==JOptionPane.YES_NO_OPTION) {
 						pay();
-						JOptionPane.showMessageDialog(null, "주문이 완료되었습니다.", "주문 완료", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "주문이 완료되었습니다.", "주문 완료", JOptionPane.INFORMATION_MESSAGE);
 						CommonPanel.redraw(new OrderDetails(cd.getCartidisSameCart()[0]));
 					}
 				}

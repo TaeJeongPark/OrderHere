@@ -19,10 +19,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import orderhere.order.CommonPanel;
+import orderhere.order.MainPanel;
 import orderhere.order.db.DB;
 
 public class PointUsage extends JPanel implements MouseListener{
 
+		private String usersid = MainPanel.getUsersId();
+	
 		private JPanel p_body;
 		private String[] sPointDate;
 		private String[] sPointStatus;
@@ -33,7 +36,6 @@ public class PointUsage extends JPanel implements MouseListener{
 		private JPanel pList;
 		private JPanel[] pListInner;
 		private int iListnum=0;
-		private String usersid = "aa1234";
 		private JTextField tfFrom;
 		private JLabel lblFromTo;
 		private JTextField tfTo;
@@ -73,16 +75,16 @@ public class PointUsage extends JPanel implements MouseListener{
 			lblPointStatus = new JLabel[iListnum];
 			lblPoint = new JLabel[iListnum];
 			
-			rs = DB.getResult("select orderdate,pointstatus,point from userspoint where usersid='"+usersid +"' order by pointid desc");
+			rs = DB.getResult("select orderdate,pointstatus,pointvalue,point from userspoint where usersid='"+usersid +"' order by pointid desc");
 			try {
 				for (int i = 0; i < iListnum; i++) {
 					
 					if(rs.next()) 
 					{
-						if(i==0) iCurrentPoint = rs.getInt("point");
+						if(i==0) iCurrentPoint = rs.getInt("point");//현재 보유 포인트
 						sPointDate[i] = rs.getString("orderdate");
 						sPointStatus[i] = rs.getString("pointstatus");
-						iPoint[i] = rs.getInt("point");
+						iPoint[i] = rs.getInt("pointvalue");
 					}
 				}
 				rs.close();

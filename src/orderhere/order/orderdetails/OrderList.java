@@ -17,10 +17,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import orderhere.order.CommonPanel;
+import orderhere.order.MainPanel;
 import orderhere.order.db.DB;
 
 public class OrderList extends JPanel implements MouseListener{
-
+		
+		private String usersid = MainPanel.getUsersId();
+	
 		private JPanel p_body;
 		private String[] sOrderDate;
 		private String[] sOrderStore;
@@ -33,7 +36,6 @@ public class OrderList extends JPanel implements MouseListener{
 		private int[] iIsSameCart;
 		private JPanel pListInnerNothing;
 		private int iListnum;
-		private String usersid="aa1234";
 		private JLabel lblSearch;
 		private JTextField tfFrom;
 		private JTextField tfTo;

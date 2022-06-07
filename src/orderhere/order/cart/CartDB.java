@@ -4,11 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
+import orderhere.order.MainPanel;
 import orderhere.order.db.DB;
 
 public class CartDB {
 	
-	private int cartidIsSameCart = 1;
+	private int cartidIsSameCart = MainPanel.getiIsSameCart();
 	
 	private int cartid[];
 

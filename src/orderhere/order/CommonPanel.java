@@ -184,8 +184,10 @@ public class CommonPanel extends JFrame implements MouseListener{
 		}else if(this.title.equals("OrderDetails")) 
 		{
 			redraw(new OrderList());
+		}else if(this.title.equals("Point Usage")||this.title.equals("Order List")||this.title.equals("Cart")) 
+		{
+			redraw(new MainPanel());
 		}
-		
 	}
 	public static void redraw(JPanel panel) {
 		Main.getMf().remove(Main.getMf().getCurrentPanel());

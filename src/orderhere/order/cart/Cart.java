@@ -23,12 +23,13 @@ import com.raven.event.EventTimePicker;
 import com.raven.swing.TimePicker;
 
 import orderhere.order.CommonPanel;
+import orderhere.order.MainPanel;
 import orderhere.order.payment.Payment;
 
 public class Cart extends JPanel implements ActionListener, EventTimePicker, ItemListener, MouseListener{
 	
-		private String usersid = "aa1234";
-		private int storeid = 1;
+		private String usersid = MainPanel.getUsersId();
+		private int storeid = MainPanel.getStoreId();
 		
 		private JPanel p_body;
 		
@@ -152,6 +153,7 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 			btn_more.setBackground(new Color(61,74,227));
 			btn_more.setForeground(Color.WHITE);
 			btn_more.setBorder(BorderFactory.createEmptyBorder());
+			btn_more.addActionListener(this);
 			btn_more.addMouseListener(this);
 			p_body.add(btn_more);
 			
@@ -406,8 +408,9 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 				cd.setiIsReserved(iIsReserved);
 				
 				CommonPanel.redraw(new Payment(cd));
-
-			
+			}else if(e.getSource()==btn_more) 
+			{
+				CommonPanel.redraw(new MainPanel());
 			}
 		}
 

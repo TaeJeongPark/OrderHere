@@ -12,11 +12,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import orderhere.order.CommonPanel;
+import orderhere.order.MainPanel;
 import orderhere.order.db.DB;
 
 public class OrderDetails extends JPanel{
 	
-		private String usersid = "aa1234";
+		private String usersid = MainPanel.getUsersId();
 		private int iIsSameCart;
 	
 		private String sOrderDate;

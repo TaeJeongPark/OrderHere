@@ -18,9 +18,10 @@ public class MainFrame extends JFrame{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
 		
-		currentPanel = new Cart();
+//		currentPanel = new Cart();
 //		currentPanel = new OrderList();
 //		currentPanel = new PointUsage();
+		currentPanel = new MainPanel();
 		add(currentPanel);
 
 		setVisible(true);
