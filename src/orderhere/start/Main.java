@@ -1,5 +1,8 @@
 package orderhere.start;
 
+import orderhere.login.Login;
+import orderhere.order.CommonPanel;
+
 /**
 * @packageName	: orderhere.start
 * @fileName		: Main.java
@@ -11,12 +14,23 @@ package orderhere.start;
 * -----------------------------------------------------------
 * 2022.05.20		TaeJeong Park		최초 생성
 * 2022.05.20		TaeJeong Park		기능 구현 완료
+* 2022.06.09		TaeJeong Park		메인 프레임 객체 생성
 */
 public class Main {
+	
+	private static MainFrame mf;	//메인 프레임 객체
 
 	public static void main(String[] args) {
 		
-		MainFrame mf = new MainFrame("Login");
+		mf = new MainFrame("Login");
+		
+		CommonPanel.redraw(new Login());
+		
+	}
+
+	public static MainFrame getMf() {
+		
+		return mf;
 		
 	}
 

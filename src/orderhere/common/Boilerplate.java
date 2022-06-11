@@ -1,6 +1,7 @@
 package orderhere.common;
 
 import java.awt.Dimension;
+import java.text.DecimalFormat;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
@@ -89,6 +90,16 @@ public class Boilerplate {
 	public static boolean birthdayValidation(String str) {
 		
 		return Pattern.matches("^[0-9]{8,8}$", str);
+		
+	}
+	
+	//천단위 구분 기호 생성
+	public static String setComma(int num) {
+		
+		DecimalFormat df = new DecimalFormat("###,###");
+		String money = df.format(num);
+		
+		return money;
 		
 	}
 	

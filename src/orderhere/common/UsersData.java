@@ -15,7 +15,7 @@ package orderhere.common;
 public class UsersData {
 
 	private static String usersId;	//회원 아이디
-	private static int storeId;		//회원이 선택한 매장의 매장번호
+	private static int storeId = 1;	//회원이 선택한 매장의 매장번호
 	private static int iIsSameCart;	//동일한 장바구니에 담긴 아이템인지 판별하는 번호
 	
 	public static String getUsersId() {

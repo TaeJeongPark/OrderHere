@@ -29,6 +29,8 @@ import orderhere.common.Boilerplate;
 import orderhere.common.DB;
 import orderhere.common.Encryption;
 import orderhere.common.UsersData;
+import orderhere.main.Main;
+import orderhere.order.CommonPanel;
 import orderhere.start.MainFrame;
 
 /**
@@ -47,6 +49,8 @@ import orderhere.start.MainFrame;
 */
 public class Login extends JPanel implements ActionListener, FocusListener, KeyListener, MouseListener {
 	
+	private MainFrame mainFrame = null;	//메인 프레임 객체
+	
 	private String usersId;				//회원 아이디
 	private String usersPw;				//회원 비밀번호
 	private String usersPwSalt;			//회원 비밀번호 난수 데이터
@@ -62,25 +66,22 @@ public class Login extends JPanel implements ActionListener, FocusListener, KeyL
 	private JLabel btnLblFind;			//아이디/비밀번호 찾기 화면 이동 라벨버튼
 	private boolean loginFlag = false;	//로그인 버튼 활성화 상태 저장
 	
-	private MainFrame mainFrame = null;	//메인 프레임 객체
-	private Join join = null;			//회원가입 패널 객체
-	private Find find = null;			//아이디/비밀번호 찾기 패널 객체
-//	private Main main = null;			//메인 패널 객체
-	
 	private ImageIcon icLoginET;		//로그인 버튼(EnabledTrue) 이미지 아이콘
 	private ImageIcon icLoginRo;		//로그인 버튼(Rollover) 이미지 아이콘
 	private ImageIcon icLoginPr;		//로그인 버튼(Pressed) 이미지 아이콘
 	
 	
 	//로그인 화면
-	public Login(MainFrame mainFrame) {
+	public Login() {
 		
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(100, 0, 0, 0));	//패널 패딩 설정
         setBackground(new Color(1, 168, 98));
 		
-		this.mainFrame = mainFrame;
-		
+        mainFrame = (MainFrame) MainFrame.getMainFrame();	//메인 프레임 객체 주소 저장
+        
+        mainFrame.setTitle("Login");
+        
 		makeImageIcon();	//이미지 아이콘 생성
 		
         makeLogo();			//로고 영역 생성
@@ -303,7 +304,7 @@ public class Login extends JPanel implements ActionListener, FocusListener, KeyL
 					usersInId = tfId.getText();	//사용자가 아이디 텍스트필드에 입력한 데이터 저장
 					usersInPw = pw;	//사용자가 비밀번호 텍스트필드에 입력한 데이터 저장
 					
-					ResultSet rs = DB.getResult("select * from USERS WHERE USERSID = '" + usersInId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
+					ResultSet rs = DB.getResult("SELECT * FROM USERS WHERE USERSID = '" + usersInId + "'");	//USERS 테이블에서 일치하는 사용자 존재 유무 조회
 					
 					try {
 						if(rs.next()) {
@@ -318,17 +319,9 @@ public class Login extends JPanel implements ActionListener, FocusListener, KeyL
 							if(usersId.equals(usersInId) && usersPw.equals(usersInPw)) {
 								System.out.println("(Login) 로그인 성공");
 								
-								setPH(tfId);				//PlaceHolder 세팅
-								setPwPH(tfPw);				//PlaceHolder 세팅
-								btnLogin.setEnabled(false);	//로그인 버튼 비활성화
-								
 								UsersData.setUsersId(usersId);	//로그인한 회원 아이디 저장
 								
-								//메인 화면으로 이동
-//								Main = new Main(this);
-//								mainFrame.add(Main, BorderLayout.CENTER);
-//								Main.setVisible(true);	//메인 화면 활성화
-//								setVisible(false);		//로그인 화면 비활성화
+								CommonPanel.redraw(new Main());	//메인 화면으로 전환
 							} else {
 								errorHandling();
 							}
@@ -435,22 +428,9 @@ public class Login extends JPanel implements ActionListener, FocusListener, KeyL
 		Object obj = e.getSource();
 		
 		if(obj == btnLblJoin) {	//회원가입 라벨버튼 클릭시
-			btnLblJoin.setForeground(Color.BLACK);
-			
-			join = new Join(this, mainFrame);
-			mainFrame.add(join, BorderLayout.CENTER);
-			mainFrame.setTitle("Join");
-	        join.setVisible(true);	//회원가입 화면 활성화
-			setVisible(false);		//로그인 화면 비활성화
-			
+			CommonPanel.redraw(new Join());	//회원가입 화면으로 전환
 		} else if(obj == btnLblFind) {	//아이디/비밀번호 찾기 라벨버튼 클릭시
-			btnLblFind.setForeground(Color.BLACK);
-			
-			find = new Find(this, mainFrame);
-			mainFrame.add(find, BorderLayout.CENTER);
-			mainFrame.setTitle("ID/PW Find");
-			find.setVisible(true);	//아이디/비밀번호 찾기 화면 활성화
-			setVisible(false);		//로그인 화면 비활성화
+			CommonPanel.redraw(new Find());	//아이디/비밀번호 찾기 화면으로 전환
 		}
 		
 	}

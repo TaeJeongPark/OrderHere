@@ -32,6 +32,7 @@ import javax.swing.border.EmptyBorder;
 import orderhere.common.Boilerplate;
 import orderhere.common.DB;
 import orderhere.common.Encryption;
+import orderhere.order.CommonPanel;
 import orderhere.start.MainFrame;
 
 /**
@@ -51,7 +52,6 @@ import orderhere.start.MainFrame;
 */
 public class Join extends JPanel implements ActionListener, FocusListener, KeyListener, ItemListener {
 	
-	private Login login = null;				//로그인 패널 객체
 	private MainFrame mainFrame = null;		//메인 프레임 객체
 	
 	private String usersInId;				//사용자에게 입력 받은 아이디
@@ -104,13 +104,14 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 	
 	
 	//회원가입 화면
-	public Join(Login login, MainFrame mainFrame) {
+	public Join() {
 		
         setLayout(new BorderLayout());
         setBackground(new Color(1, 168, 98));
         
-		this.login = login;
-		this.mainFrame = mainFrame;
+        mainFrame = (MainFrame) MainFrame.getMainFrame();	//메인 프레임 객체 주소 저장
+        
+        mainFrame.setTitle("Join");
         
 		makeImageIcon();	//이미지 아이콘 생성
 		
@@ -146,9 +147,11 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 
 	//타이틀 영역 생성
 	private void makeTitle() {
+		
 		JPanel pnTitleBackground = new JPanel();
 		pnTitleBackground.setLayout(new BorderLayout());
 		pnTitleBackground.setBackground(new Color(1, 168, 98));		//패널 색상 배경생과 동일하게 설정
+		
 		
 		//타이틀 생성
 		JPanel pnTitle = new JPanel();
@@ -162,22 +165,14 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 		pnTitle.add(lblTitle);
 		pnTitleBackground.add(pnTitle, BorderLayout.CENTER);
 		
+		
 		//로고 생성
-		JPanel pnLogo = new JPanel();
-		pnLogo.setLayout(new FlowLayout(FlowLayout.CENTER));
-		pnLogo.setBorder(new EmptyBorder(20, 0, 0, 20));	//패널 패딩 설정
-		pnLogo.setBackground(new Color(1, 168, 98));		//패널 색상 배경생과 동일하게 설정
+		ImageIcon iiconlogo = new ImageIcon("images/common/logo_titlebar.png");
+		JLabel logo = new JLabel(iiconlogo);
+		logo.setSize(100,100);
+		logo.setLocation(904, 40);
 		
-		JLabel lblLogo = new JLabel(new ImageIcon("images/common/logo_titleBar.png"));
-		
-		pnLogo.add(lblLogo);
-		pnTitleBackground.add(pnLogo, BorderLayout.EAST);
-		
-		JPanel pnLeft = new JPanel();
-		pnLeft.setPreferredSize(new Dimension(120, 120));	//텍스트필드 크기 설정
-		pnLeft.setBackground(new Color(1, 168, 98));		//패널 색상 배경생과 동일하게 설정
-		
-		pnTitleBackground.add(pnLeft, BorderLayout.WEST);
+		add(logo);
 		
 		add(pnTitleBackground, BorderLayout.NORTH);
 		
@@ -442,11 +437,14 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 	}
 	
 	//로그인 화면으로 전환
-	private void loginPanelTransition() {
+	private void changeLogin() {
 		
-		mainFrame.setTitle("Login");
-		login.setVisible(true);	//로그인 화면 활성화
-		setVisible(false);		//회원가입 화면 비활성화
+		//판단 변수 초기화
+		overlapFlag = false;
+		certifiFlag = false;
+		sendCertifiFlag = 1;
+		
+		CommonPanel.redraw(new Login());	//로그인 화면으로 전환
 		
 	}
 
@@ -559,11 +557,9 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 				btnSend.setEnabled(false);	//전송하기 버튼 비활성화
 			}
 		} else if(obj == btnCancel) {
-			overlapFlag = false;	//중복확인 초기화
-			sendCertifiFlag = 1;	//전송하기로 변경
-			certifiFlag = false;	//인증완료 초기화
 			
-			loginPanelTransition();	//로그인 화면으로 전환
+			changeLogin();	//로그인 화면으로 전환
+			
 		} else if(obj == btnOk) {
 			
 			usersInId = tfId.getText();					//입력받은 아이디 저장
@@ -610,11 +606,7 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 							
 							JOptionPane.showMessageDialog(mainFrame, "회원가입이 완료되었습니다.", "회원가입 완료", JOptionPane.PLAIN_MESSAGE);
 							
-							overlapFlag = false;	//중복확인 초기화
-							sendCertifiFlag = 1;	//전송하기로 변경
-							certifiFlag = false;	//인증완료 초기화
-							
-							loginPanelTransition();	//로그인 화면으로 전환
+							changeLogin();	//로그인 화면으로 전환
 						} catch (SQLException e1) {
 							System.out.println("(Join) 예외발생 : Max 포인트아이디 조회에 실패했습니다.");
 							e1.printStackTrace();

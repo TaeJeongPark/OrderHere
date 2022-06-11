@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import orderhere.common.DB;
 import orderhere.login.Login;
@@ -25,7 +26,8 @@ import orderhere.login.Login;
 */
 public class MainFrame extends JFrame implements WindowListener {
 
-	private Login login = null;
+	private static JFrame mainFrame;
+	private JPanel currentPanel;
 	
 	//로그인 화면
 	public MainFrame(String title) {
@@ -38,6 +40,8 @@ public class MainFrame extends JFrame implements WindowListener {
         setResizable(false);
         setLayout(new BorderLayout());
         
+        mainFrame = this;
+        
         
         //타이틀바 아이콘 설정
         Toolkit tk = Toolkit.getDefaultToolkit();
@@ -45,12 +49,8 @@ public class MainFrame extends JFrame implements WindowListener {
         setIconImage(img);
         
         
-        //로그인 패널 생성
-        login = new Login(this);
-        add(login, BorderLayout.CENTER);
-        login.setVisible(true);	//회원가입 화면 활성화
-        setTitle("Join");
-        
+        currentPanel = new Login();
+        add(currentPanel);
         
         setVisible(true);
         
@@ -93,6 +93,30 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	@Override
 	public void windowDeactivated(WindowEvent e) {
+		
+	}
+
+	public static JFrame getMainFrame() {
+		
+		return mainFrame;
+		
+	}
+
+	public static void setMainFrame(JFrame mainFrame) {
+		
+		MainFrame.mainFrame = mainFrame;
+		
+	}
+	
+	public JPanel getCurrentPanel() {
+		
+		return currentPanel;
+		
+	}
+
+	public void setCurrentPanel(JPanel currentPanel) {
+		
+		this.currentPanel = currentPanel;
 		
 	}
 

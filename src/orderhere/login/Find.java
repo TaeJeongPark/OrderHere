@@ -32,6 +32,7 @@ import javax.swing.border.EmptyBorder;
 import orderhere.common.Boilerplate;
 import orderhere.common.DB;
 import orderhere.common.Encryption;
+import orderhere.order.CommonPanel;
 import orderhere.start.MainFrame;
 
 /**
@@ -50,7 +51,6 @@ import orderhere.start.MainFrame;
 */
 public class Find extends JPanel implements ActionListener, FocusListener, KeyListener, ItemListener {
 
-	private Login login = null;				//로그인 패널 객체
 	private MainFrame mainFrame = null;		//메인 프레임 객체
 	
 	private JButton btnBack;				//뒤로가기 버튼
@@ -117,13 +117,14 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 	
 	
 	//아이디/비밀번호 찾기 화면
-	public Find(Login login, MainFrame mainFrame) {
+	public Find() {
 		
 		setLayout(new BorderLayout());
         setBackground(new Color(1, 168, 98));
-		
-		this.login = login;
-		this.mainFrame = mainFrame;
+        
+        mainFrame = (MainFrame) MainFrame.getMainFrame();	//메인 프레임 객체 주소 저장
+        
+        mainFrame.setTitle("Find");
         
 		tabPane = new JTabbedPane(JTabbedPane.TOP);	//탭 팬 생성
 		
@@ -169,10 +170,11 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 		pnTitleBackground.setLayout(new BorderLayout());
 		pnTitleBackground.setBackground(new Color(1, 168, 98));		//패널 색상 배경생과 동일하게 설정
 		
+		
 		//타이틀 생성
 		JPanel pnTitle = new JPanel();
 		pnTitle.setLayout(new FlowLayout(FlowLayout.CENTER));
-		pnTitle.setBorder(new EmptyBorder(50, 0, 0, 0));	//패널 패딩 설정
+		pnTitle.setBorder(new EmptyBorder(50, 0, 0, 120));	//패널 패딩 설정
 		pnTitle.setBackground(new Color(1, 168, 98));		//패널 색상 배경생과 동일하게 설정
 		
 		JLabel lblTitle = new JLabel("Find ID/PW");
@@ -181,21 +183,20 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 		pnTitle.add(lblTitle);
 		pnTitleBackground.add(pnTitle, BorderLayout.CENTER);
 		
+		
 		//로고 생성
-		JPanel pnLogo = new JPanel();
-		pnLogo.setLayout(new FlowLayout(FlowLayout.CENTER));
-		pnLogo.setBorder(new EmptyBorder(20, 0, 0, 20));	//패널 패딩 설정
-		pnLogo.setBackground(new Color(1, 168, 98));		//패널 색상 배경생과 동일하게 설정
+		ImageIcon iiconlogo = new ImageIcon("images/common/logo_titlebar.png");
+		JLabel logo = new JLabel(iiconlogo);
+		logo.setSize(100,100);
+		logo.setLocation(904, 40);
 		
-		JLabel lblLogo = new JLabel(new ImageIcon("images/common/logo_titleBar.png"));
+		add(logo);
 		
-		pnLogo.add(lblLogo);
-		pnTitleBackground.add(pnLogo, BorderLayout.EAST);
 		
 		//뒤로가기 버튼 생성
 		JPanel pnBack = new JPanel();
 		pnBack.setLayout(new FlowLayout(FlowLayout.CENTER));
-		pnBack.setPreferredSize(new Dimension(120, 120));	//텍스트필드 크기 설정
+		pnBack.setPreferredSize(new Dimension(120, 120));	//패널 크기 설정
 		pnBack.setBorder(new EmptyBorder(30, 0, 0, 0));		//패널 패딩 설정
 		pnBack.setBackground(new Color(1, 168, 98));		//패널 색상 배경생과 동일하게 설정
 		
@@ -652,11 +653,16 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 	}
 	
 	//로그인 화면으로 전환
-	private void loginPanelTransition() {
+	private void changeLogin() {
 		
-		mainFrame.setTitle("Login");
-		login.setVisible(true);	//로그인 화면 활성화
-		setVisible(false);		//아이디/비밀번호 찾기 화면 비활성화
+		//판단 변수 초기화
+		sendCertifiFlagId = 1;
+		certifiFlagId = false;
+		sendCertifiFlagPw = 1;
+		certifiFlagPw = false;
+		idPwFlag = 0;
+		
+		CommonPanel.redraw(new Login());	//로그인 화면으로 전환
 		
 	}
 
@@ -666,12 +672,9 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 		Object obj = e.getSource();
 		
 		if(obj == btnBack) {
-			certifiFlagId = false;	//아이디 찾기 인증완료 초기화
-			certifiFlagPw = false;	//비밀번호 찾기 인증완료 초기화
-			sendCertifiFlagId = 1;	//아이디 찾기 전송하기로 변경
-			sendCertifiFlagPw = 1;	//비밀번호 찾기 전송하기로 변경
 			
-			loginPanelTransition();	//로그인 화면으로 전환
+			changeLogin();	//로그인 화면으로 전환
+			
 		} else if(obj == btnSendId && sendCertifiFlagId == 1 && Boilerplate.phonNumValidation(tfPhonNumId.getText())) {
 			tfPhonNumId.setEnabled(false);	//휴대폰번호 텍스트필드 비활성화
 			
@@ -750,12 +753,7 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 						
 						System.out.println("(ID Find) 회원 조회(ID Find) 성공");
 						
-						certifiFlagId = false;	//아이디 찾기 인증완료 초기화
-						certifiFlagPw = false;	//비밀번호 찾기 인증완료 초기화
-						sendCertifiFlagId = 1;	//아이디 찾기 전송하기로 변경
-						sendCertifiFlagPw = 1;	//비밀번호 찾기 전송하기로 변경
-						
-						loginPanelTransition();	//로그인 화면으로 전환
+						changeLogin();	//로그인 화면으로 전환
 					} else {
 						errorHandling();
 					}
@@ -875,7 +873,7 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 					sendCertifiFlagId = 1;	//아이디 찾기 전송하기로 변경
 					sendCertifiFlagPw = 1;	//비밀번호 찾기 전송하기로 변경
 					
-					loginPanelTransition();	//로그인 화면으로 전환
+					changeLogin();	//로그인 화면으로 전환
 				} else {
 					JOptionPane.showMessageDialog(mainFrame, "사용할 수 없는 비밀번호입니다.\n비밀번호는 영문, 숫자, 특수문자 조합으로\n최소 8자리 이상, 최대 15자리 이하로 사용 가능합니다.\n다시 시도해주세요.", "비밀번호 변경 실패", JOptionPane.ERROR_MESSAGE);
 					
