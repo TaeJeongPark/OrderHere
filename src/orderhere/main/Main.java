@@ -9,32 +9,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
 import orderhere.common.Boilerplate;
 import orderhere.common.DB;
 import orderhere.common.UsersData;
-import orderhere.login.Join;
 import orderhere.login.Login;
 import orderhere.order.CommonPanel;
 import orderhere.order.cart.Cart;
-import orderhere.order.cart.CartMenuPanel;
 import orderhere.order.orderdetails.OrderList;
 import orderhere.order.pointusage.PointUsage;
 import orderhere.start.MainFrame;
@@ -96,7 +89,7 @@ public class Main extends JPanel implements ActionListener, ItemListener {
 	//메인 화면
 	public Main() {
 		
-		initUsersData();// 장바구니 번호 초기화
+		initUsersData();	// 장바구니 번호 초기화
 		
 		setLayout(new BorderLayout());
 		

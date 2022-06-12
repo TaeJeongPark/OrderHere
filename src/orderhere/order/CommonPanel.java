@@ -196,7 +196,7 @@ public class CommonPanel extends JFrame implements MouseListener{
 	}
 
 	public static void redraw(JPanel panel) {
-		Main.getMf().remove(Main.getMf().getCurrentPanel());
+		if(Main.getMf() != null) Main.getMf().remove(Main.getMf().getCurrentPanel());
 		Main.getMf().setCurrentPanel(panel);
 		Main.getMf().add(Main.getMf().getCurrentPanel());
 		Main.getMf().getContentPane().setVisible(false);
