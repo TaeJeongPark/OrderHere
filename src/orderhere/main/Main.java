@@ -96,6 +96,8 @@ public class Main extends JPanel implements ActionListener, ItemListener {
 	//메인 화면
 	public Main() {
 		
+		initUsersData();// 장바구니 번호 초기화
+		
 		setLayout(new BorderLayout());
 		
         mainFrame = (MainFrame) MainFrame.getMainFrame();	//메인 프레임 객체 주소 저장
@@ -531,4 +533,48 @@ public class Main extends JPanel implements ActionListener, ItemListener {
 		
 	}
 	
+	private void initUsersData() {
+		/* Writed by 송윤하 */
+		
+		ResultSet rsIsPaid = null;
+		ResultSet rsCart = null;
+		
+		int iIsSameCart = -1;
+		int cartid = -1;
+		
+		rsIsPaid = DB.getResult("select max(cartid) from cart where usersid='"+UsersData.getUsersId()+"'");
+		try {
+			if(rsIsPaid.next()) 
+			{
+				cartid = rsIsPaid.getInt(1);
+			}
+		} catch (SQLException e) {
+			System.out.println("Main.initUsersData(): db에러");
+			e.printStackTrace();
+		}finally {
+			try {
+				rsIsPaid.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		rsIsPaid = DB.getResult("select cartid from orders where cartid="+cartid);
+		try {
+			if(rsIsPaid.next()) 
+			{
+				//결제된 장바구니, 장바구니 같음 여부 번호 +1
+				rsCart = DB.getResult("select cartidissamecart from cart where cartid="+cartid);
+				if(rsCart.next()) iIsSameCart = rsCart.getInt(1)+1;
+			}else 
+			{   //미결제 장바구니, 장바구니 같음 여부 번호 그대로
+				rsCart = DB.getResult("select cartidissamecart from cart where cartid="+cartid);
+				if(rsCart.next()) iIsSameCart = rsCart.getInt(1);
+			}
+			UsersData.setiIsSameCart(iIsSameCart);
+		} catch (SQLException e) {
+			System.out.println("CARTIDISSAMECART: db에러");
+			e.printStackTrace();
+		}
+	}
 }
