@@ -4,16 +4,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
-import orderhere.order.MainPanel;
-import orderhere.order.db.DB;
+import orderhere.common.DB;
+import orderhere.common.UsersData;
 
 public class CartDB {
 	
-	private int cartidIsSameCart = MainPanel.getiIsSameCart();
+	private int cartidIsSameCart = UsersData.getiIsSameCart();
 	
 	private int cartid[];
 
-	private String usersid = "aa1234";
+	private String usersid = UsersData.getUsersId();
 	private int cartnum;
 	private CartDBData[] cdbdata;
 	private ResultSet rs;
@@ -22,7 +22,6 @@ public class CartDB {
 	
 	public CartDB() 
 	{
-		DB.init();
 		
 		//장바구니에 담은 메뉴 갯수
 		rs = DB.getResult("select count(*) from cart where usersid='"+usersid+"' and cartidIsSameCart="+cartidIsSameCart);

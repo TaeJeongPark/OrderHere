@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 
 import orderhere.order.CommonPanel;
 import orderhere.order.cart.CartData;
-import orderhere.order.db.DB;
+import orderhere.common.DB;
 import orderhere.order.orderdetails.OrderDetails;
 
 public class Payment extends JPanel implements ActionListener, MouseListener{
@@ -212,7 +212,6 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 		}
 			
 		private void getDataFromDB() {
-			DB.init();
 			ResultSet rs;
 			try {
 				rs = DB.getResult("select storeAddress,storename from store where storeid="+storeid);
@@ -256,7 +255,7 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 					inputPoint = Integer.parseInt(tfPoint.getText());
 				}catch(NumberFormatException e1) 
 				{
-					JOptionPane.showMessageDialog(null, "숫자만 입력해주세요", "오류", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "숫자만 입력해주세요", "오류", JOptionPane.ERROR_MESSAGE);
 					tfPoint.setText("");
 					iToPay =  iSumPrice;
 					lblDToPay.setText(CommonPanel.toAddCommaAtPrice(iToPay)+" 원");
@@ -264,13 +263,13 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 					return;
 				}catch(Exception e3) 
 				{
-					JOptionPane.showMessageDialog(null, "숫자만 입력해주세요", "오류", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "숫자만 입력해주세요", "오류", JOptionPane.ERROR_MESSAGE);
 					inputPoint = 0;
 					return;
 				}
 				if(inputPoint>iUsersPoint) 
 				{
-					JOptionPane.showMessageDialog(null, "보유 포인트를 초과하였습니다", "포인트 초과", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "보유 포인트를 초과하였습니다", "포인트 초과", JOptionPane.ERROR_MESSAGE);
 					tfPoint.setText("");
 					iToPay =  iSumPrice;
 					lblDToPay.setText(CommonPanel.toAddCommaAtPrice(iToPay)+" 원");
@@ -279,7 +278,7 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 				}
 				if(inputPoint<1000) 
 				{
-					JOptionPane.showMessageDialog(null, "최소 1,000P부터 사용가능합니다", "포인트가 적습니다", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "최소 1,000P부터 사용가능합니다", "포인트가 적습니다", JOptionPane.ERROR_MESSAGE);
 					tfPoint.setText("");
 					iToPay =  iSumPrice;
 					lblDToPay.setText(CommonPanel.toAddCommaAtPrice(iToPay)+" 원");
@@ -297,13 +296,13 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 			{
 				if(iUsersCash<iToPay) 
 				{
-					JOptionPane.showMessageDialog(null, "캐시가 부족합니다", "캐시가 부족합니다", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, "캐시가 부족합니다", "캐시가 부족합니다", JOptionPane.ERROR_MESSAGE);
 				}else if(iUsersCash>=iToPay) 
 				{
-					int c = JOptionPane.showConfirmDialog(null, "주문 하시겠습니까?", "주문 확인", JOptionPane.YES_NO_OPTION);
+					int c = JOptionPane.showConfirmDialog(this, "주문 하시겠습니까?", "주문 확인", JOptionPane.YES_NO_OPTION);
 					if(c==JOptionPane.YES_NO_OPTION) {
 						pay();
-						JOptionPane.showMessageDialog(null, "주문이 완료되었습니다.", "주문 완료", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(this, "주문이 완료되었습니다.", "주문 완료", JOptionPane.INFORMATION_MESSAGE);
 						CommonPanel.redraw(new OrderDetails(cd.getCartidisSameCart()[0]));
 					}
 				}

@@ -22,14 +22,15 @@ import javax.swing.JScrollPane;
 import com.raven.event.EventTimePicker;
 import com.raven.swing.TimePicker;
 
+import orderhere.common.UsersData;
+import orderhere.main.Main;
 import orderhere.order.CommonPanel;
-import orderhere.order.MainPanel;
 import orderhere.order.payment.Payment;
 
 public class Cart extends JPanel implements ActionListener, EventTimePicker, ItemListener, MouseListener{
 	
-		private String usersid = MainPanel.getUsersId();
-		private int storeid = MainPanel.getStoreId();
+		private String usersid = UsersData.getUsersId();
+		private int storeid = UsersData.getStoreId();
 		
 		private JPanel p_body;
 		
@@ -80,6 +81,9 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 		
 		public Cart() 
 		{
+			System.out.println(usersid);
+			System.out.println(storeid);
+			System.out.println(UsersData.getiIsSameCart());
 			getDataFromDB();
 			
 			setSize(1050,750);
@@ -255,7 +259,7 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 				option = cdbdata[i].getOptionStatus()+" / "+
 						cdbdata[i].getOptionPacking()+" / "+
 						cdbdata[i].getOptionSize()+" / "+
-						cdbdata[i].getOptionSyrup()+" / x"+
+						cdbdata[i].getOptionSyrup()+" 시럽 x"+
 						cdbdata[i].getOpionSyrupNum()+" / "+
 						cdbdata[i].getOptionWhippedcream();
 				menucartquantity = "수량    "+"x "+cdbdata[i].getOptionQuantity();
@@ -410,7 +414,7 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 				CommonPanel.redraw(new Payment(cd));
 			}else if(e.getSource()==btn_more) 
 			{
-				CommonPanel.redraw(new MainPanel());
+				CommonPanel.redraw(new Main());
 			}
 		}
 

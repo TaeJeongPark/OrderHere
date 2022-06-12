@@ -180,7 +180,7 @@ public class Main extends JPanel implements ActionListener, ItemListener {
 			}
 		}
 		
-		rs = DB.getResult("SELECT POINT FROM POINT WHERE USERSID = '" + UsersData.getUsersId() + "'");	//Point 테이블에서 사용자 보유 포인트 조회
+		rs = DB.getResult("SELECT POINT FROM usersPOINT WHERE USERSID = '" + UsersData.getUsersId() + "'");	//Point 테이블에서 사용자 보유 포인트 조회
 		
 		try {
 			if(rs.next()) {

@@ -18,13 +18,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import orderhere.common.DB;
+import orderhere.common.UsersData;
 import orderhere.order.CommonPanel;
-import orderhere.order.MainPanel;
-import orderhere.order.db.DB;
 
 public class PointUsage extends JPanel implements MouseListener{
 
-		private String usersid = MainPanel.getUsersId();
+		private String usersid = UsersData.getUsersId();
 	
 		private JPanel p_body;
 		private String[] sPointDate;
@@ -57,11 +57,10 @@ public class PointUsage extends JPanel implements MouseListener{
 		}
 
 		private void getDataFromDB() {
-			DB.init();
 			
 			ResultSet rs = DB.getResult("select count(*) from userspoint where usersid='"+usersid +"'");
 			try {
-				if(rs.next()) iListnum = rs.getInt(1);
+				if(rs.next()&&rs.getInt(1)!=0) iListnum = rs.getInt(1)-1; // 세팅 포인트 제외
 				rs.close();
 			} catch (SQLException e1) {
 				e1.printStackTrace();
@@ -77,11 +76,11 @@ public class PointUsage extends JPanel implements MouseListener{
 			
 			rs = DB.getResult("select orderdate,pointstatus,pointvalue,point from userspoint where usersid='"+usersid +"' order by pointid desc");
 			try {
-				for (int i = 0; i < iListnum; i++) {
+				for (int i = 0; i < iListnum; i++) { 
 					
 					if(rs.next()) 
 					{
-						if(i==0) iCurrentPoint = rs.getInt("point");//현재 보유 포인트
+						if(i==0) iCurrentPoint = rs.getInt("point"); //현재 보유 포인트
 						sPointDate[i] = rs.getString("orderdate");
 						sPointStatus[i] = rs.getString("pointstatus");
 						iPoint[i] = rs.getInt("pointvalue");
@@ -177,6 +176,26 @@ public class PointUsage extends JPanel implements MouseListener{
 		}
 
 		private void addListPanels() {
+			
+			if(iListnum==1) 
+			{
+				JPanel pNoList = new JPanel();
+				pNoList.setLayout(null);
+				pNoList.setSize(837,44*7);
+				pNoList.setLocation(0,0);
+				pNoList.setBackground(new Color(255,236,198));
+				
+				JLabel lblNothing = new JLabel("포인트 내역이 없습니다");
+				lblNothing.setSize(250,20);
+				lblNothing.setLocation(20, 20);
+				lblNothing.setFont(new Font("맑은 고딕",Font.PLAIN,15));
+				pNoList.add(lblNothing);
+				
+				pList.add(pNoList);
+				return;
+	
+			}
+			
 			pListInner = new JPanel[iListnum];
 			for (int i = 0; i < iListnum; i++) {
 				pListInner[i] = new JPanel();

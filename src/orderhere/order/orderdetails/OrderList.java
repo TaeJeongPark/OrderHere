@@ -16,13 +16,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import orderhere.common.DB;
+import orderhere.common.UsersData;
 import orderhere.order.CommonPanel;
-import orderhere.order.MainPanel;
-import orderhere.order.db.DB;
 
 public class OrderList extends JPanel implements MouseListener{
 		
-		private String usersid = MainPanel.getUsersId();
+		private String usersid = UsersData.getUsersId();
 	
 		private JPanel p_body;
 		private String[] sOrderDate;
@@ -55,7 +55,6 @@ public class OrderList extends JPanel implements MouseListener{
 		}
 
 		private void getDataFromDB() {
-			DB.init();
 			ResultSet rsOrders;
 			ResultSet rsStore;
 			

@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 
 import orderhere.order.cart.Cart;
 import orderhere.order.orderdetails.OrderList;
-import orderhere.start.Main;
+import orderhere.start.*;
 
 public class CommonPanel extends JFrame implements MouseListener{
 	private static JPanel p_top;
@@ -78,24 +78,27 @@ public class CommonPanel extends JFrame implements MouseListener{
 	}
 	
 	public static int getTitleW(String title) {
-		int[] fontsizex = {108,260,286,216,333};//cart,orderlist,pointusage,payment,orderdetail
-		String[] fontTitle = {"Cart","Order List","Point Usage","Payment","OrderDetails"};
+		int[] fontsizex = {108,260,286,216,333,370};//cart,orderlist,pointusage,payment,orderdetail
+		String[] fontTitle = {"Cart","Order List","Point Usage","Payment","OrderDetails","Menu Information"};
 		if(title.equals(fontTitle[0])) return fontsizex[0];
 		else if(title.equals(fontTitle[1])) return fontsizex[1];
 		else if(title.equals(fontTitle[2])) return fontsizex[2];
 		else if(title.equals(fontTitle[3])) return fontsizex[3];
 		else if(title.equals(fontTitle[4])) return fontsizex[4];
+		else if(title.equals(fontTitle[5])) return fontsizex[5];
 		return 0;
 	}
 	
 	public static int getTitleH(String title) {
-		int[] fontsizey = {38,50,55,48,50};
-		String[] fontTitle = {"Cart","Order List","Point Usage","Payment","OrderDetails"};
+		int[] fontsizey = {38,50,55,48,50,46};
+		String[] fontTitle = {"Cart","Order List","Point Usage","Payment","OrderDetails","Menu Information"};
 		if(title.equals(fontTitle[0])) return fontsizey[0];
 		else if(title.equals(fontTitle[1])) return fontsizey[1];
 		else if(title.equals(fontTitle[2])) return fontsizey[2];
 		else if(title.equals(fontTitle[3])) return fontsizey[3];
 		else if(title.equals(fontTitle[4])) return fontsizey[4];
+		else if(title.equals(fontTitle[5])) return fontsizey[5];
+		
 		return 0;
 	}
 	
@@ -185,11 +188,13 @@ public class CommonPanel extends JFrame implements MouseListener{
 		}else if(this.title.equals("OrderDetails")) 
 		{
 			redraw(new OrderList());
-		}else if(this.title.equals("Point Usage")||this.title.equals("Order List")||this.title.equals("Cart")) 
+		}else if(this.title.equals("Point Usage")||this.title.equals("Order List")||
+				this.title.equals("Cart")||this.title.equals("Menu Information")) 
 		{
-			redraw(new MainPanel());
+			redraw(new orderhere.main.Main());
 		}
 	}
+
 	public static void redraw(JPanel panel) {
 		Main.getMf().remove(Main.getMf().getCurrentPanel());
 		Main.getMf().setCurrentPanel(panel);

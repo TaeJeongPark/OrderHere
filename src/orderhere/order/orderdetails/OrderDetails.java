@@ -11,13 +11,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import orderhere.common.DB;
+import orderhere.common.UsersData;
 import orderhere.order.CommonPanel;
-import orderhere.order.MainPanel;
-import orderhere.order.db.DB;
 
 public class OrderDetails extends JPanel{
 	
-		private String usersid = MainPanel.getUsersId();
+		private String usersid = UsersData.getUsersId();
 		private int iIsSameCart;
 	
 		private String sOrderDate;
@@ -218,7 +218,6 @@ public class OrderDetails extends JPanel{
 			
 		}
 		private void getDataFromDB() {
-			DB.init();
 			cartnum=0;
 			ResultSet rs = DB.getResult("select count(*) from orders where usersid='"+
 					usersid+"' and cartidissamecart="+iIsSameCart);

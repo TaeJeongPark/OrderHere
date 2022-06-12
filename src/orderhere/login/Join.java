@@ -584,7 +584,7 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 					if(Boilerplate.pwValidation(usersInPw)) {
 						
 						int pointId;
-						ResultSet rs = DB.getResult("select max(pointid) from point");
+						ResultSet rs = DB.getResult("select max(pointid) from userspoint");
 						
 						try {
 							if(rs.next()) pointId = rs.getInt("MAX(POINTID)") + 1;
@@ -600,7 +600,7 @@ public class Join extends JPanel implements ActionListener, FocusListener, KeyLi
 							LocalDateTime nowDateTime = LocalDateTime.now();	//현재 날짜와 시간
 							String formatedDateTime = nowDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 							
-							sqlInsert = "INSERT INTO ALLNIGHT.POINT (POINTID, USERSID, ORDERDATE, POINTSTATUS, POINTVALUE, POINT)"
+							sqlInsert = "INSERT INTO usersPOINT (POINTID, USERSID, ORDERDATE, POINTSTATUS, POINTVALUE, POINT)"
 									+ "VALUES(" + pointId + ", '" + usersInId + "', TO_DATE('" + formatedDateTime + "', 'yyyy-mm-dd hh24:mi:ss'), '세팅', 0, 0)";		//회원 포인트 Insert문 생성
 							DB.executeSQL(sqlInsert);	//DB로 Insert문 전송
 							
