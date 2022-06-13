@@ -540,6 +540,9 @@ public class Main extends JPanel implements ActionListener, ItemListener {
 			if(rsIsPaid.next()) 
 			{
 				cartid = rsIsPaid.getInt(1);
+			}else 
+			{
+				cartid = 1;
 			}
 		} catch (SQLException e) {
 			System.out.println("Main.initUsersData(): db에러");
