@@ -28,6 +28,7 @@ import orderhere.common.UsersData;
 import orderhere.login.Login;
 import orderhere.order.CommonPanel;
 import orderhere.order.cart.Cart;
+import orderhere.order.cart.MenuInformation;
 import orderhere.order.orderdetails.OrderList;
 import orderhere.order.pointusage.PointUsage;
 import orderhere.start.MainFrame;
@@ -509,7 +510,7 @@ public class Main extends JPanel implements ActionListener, ItemListener {
 			CommonPanel.redraw(new Cart());			//장바구니 화면으로 전환
 		} else if(obj == btnMenuItem) {
 			System.out.println(btnMenuItem.getName());
-//			CommonPanel.redraw(new MenuInfo(btnMenuItem.getName()));	//메뉴 상세정보 화면으로 전환
+			CommonPanel.redraw(new MenuInformation(btnMenuItem.getName()));	//메뉴 상세정보 화면으로 전환
 		}
 		
 	}
