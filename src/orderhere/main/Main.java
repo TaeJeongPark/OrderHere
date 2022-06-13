@@ -553,11 +553,13 @@ public class Main extends JPanel implements ActionListener, ItemListener {
 			}
 		}
 		
-		if(cartid==-1) 
+		if(cartid==0) 
 		{
 			UsersData.setiIsSameCart(1); // 최초 장바구니
 			return;
+			
 		}
+
 		rsIsPaid = DB.getResult("select cartid from orders where cartid="+cartid);
 		try {
 			if(rsIsPaid.next()) 

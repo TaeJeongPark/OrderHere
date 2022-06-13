@@ -424,7 +424,7 @@ public class MenuInformation extends JPanel implements ActionListener, MouseList
 		{
 			if(rbSize[1].isSelected()) paraSize = rbSize[1].getText();
 			else paraSize = "none";
-		}else if(e.getSource()==rbSize[0]) 
+		}else if(e.getSource()==rbSize[2]) 
 		{
 			if(rbSize[2].isSelected()) paraSize = rbSize[2].getText();
 			else paraSize = "none";
