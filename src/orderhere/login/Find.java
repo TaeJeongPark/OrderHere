@@ -51,7 +51,7 @@ import orderhere.start.StartFrame;
 */
 public class Find extends JPanel implements ActionListener, FocusListener, KeyListener, ItemListener {
 
-	private StartFrame mainFrame = null;		//메인 프레임 객체
+	private StartFrame mainFrame = null;	//메인 프레임 객체
 	
 	private JButton btnBack;				//뒤로가기 버튼
 	private JTabbedPane tabPane;			//아이디/비밀번호 탭 팬
@@ -733,13 +733,15 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 				ResultSet rs = DB.getResult("select * from USERS WHERE USERSNAME = '" + usersInName + "' and USERSBIRTHDAY = '" + usersInBirthday + "' and USERSPHONNUM = '" + usersInPhoneNum + "'");
 				
 				try {
-					if(rs.next()) {
-						Vector<String> userId = new Vector<String>();
-						
-						while(rs.next()) {
-							userId.add(rs.getString("USERSID"));
-							System.out.println(rs.getString("USERSID"));
-						}
+					
+					Vector<String> userId = new Vector<String>();
+					
+					while(rs.next()) {
+						userId.add(rs.getString("USERSID"));
+						System.out.println(rs.getString("USERSID"));
+					}
+					
+					if(!userId.isEmpty()) {
 						
 						String message;
 						message = usersInName + " 님의 아이디는 ";
