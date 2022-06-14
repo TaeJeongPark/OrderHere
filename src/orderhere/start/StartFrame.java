@@ -24,13 +24,13 @@ import orderhere.login.Login;
 * 2022.06.02        TaeJeong Park       최초 생성
 * 2022.06.02        TaeJeong Park       기능 구현 완료
 */
-public class MainFrame extends JFrame implements WindowListener {
+public class StartFrame extends JFrame implements WindowListener {
 
 	private static JFrame mainFrame;
 	private JPanel currentPanel;
 	
 	//로그인 화면
-	public MainFrame(String title) {
+	public StartFrame(String title) {
 		
         setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -104,7 +104,7 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	public static void setMainFrame(JFrame mainFrame) {
 		
-		MainFrame.mainFrame = mainFrame;
+		StartFrame.mainFrame = mainFrame;
 		
 	}
 	

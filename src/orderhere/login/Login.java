@@ -31,7 +31,7 @@ import orderhere.common.Encryption;
 import orderhere.common.UsersData;
 import orderhere.main.Main;
 import orderhere.order.CommonPanel;
-import orderhere.start.MainFrame;
+import orderhere.start.StartFrame;
 
 /**
 * @packageName	: orderhere.login
@@ -49,7 +49,7 @@ import orderhere.start.MainFrame;
 */
 public class Login extends JPanel implements ActionListener, FocusListener, KeyListener, MouseListener {
 	
-	private MainFrame mainFrame = null;	//메인 프레임 객체
+	private StartFrame mainFrame = null;	//메인 프레임 객체
 	
 	private String usersId;				//회원 아이디
 	private String usersPw;				//회원 비밀번호
@@ -78,7 +78,7 @@ public class Login extends JPanel implements ActionListener, FocusListener, KeyL
 		setBorder(new EmptyBorder(100, 0, 0, 0));	//패널 패딩 설정
         setBackground(new Color(1, 168, 98));
 		
-        mainFrame = (MainFrame) MainFrame.getMainFrame();	//메인 프레임 객체 주소 저장
+        mainFrame = (StartFrame) StartFrame.getMainFrame();	//메인 프레임 객체 주소 저장
         
         mainFrame.setTitle("Login");
         

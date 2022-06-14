@@ -16,19 +16,19 @@ import orderhere.order.CommonPanel;
 * 2022.05.20		TaeJeong Park		기능 구현 완료
 * 2022.06.09		TaeJeong Park		메인 프레임 객체 생성
 */
-public class Main {
+public class Start {
 	
-	private static MainFrame mf;	//메인 프레임 객체
+	private static StartFrame mf;	//메인 프레임 객체
 
 	public static void main(String[] args) {
 		
-		mf = new MainFrame("Login");
+		mf = new StartFrame("Login");
 		
 		CommonPanel.redraw(new Login());
 		
 	}
 
-	public static MainFrame getMf() {
+	public static StartFrame getMf() {
 		
 		return mf;
 		

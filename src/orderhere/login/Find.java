@@ -33,7 +33,7 @@ import orderhere.common.Boilerplate;
 import orderhere.common.DB;
 import orderhere.common.Encryption;
 import orderhere.order.CommonPanel;
-import orderhere.start.MainFrame;
+import orderhere.start.StartFrame;
 
 /**
 * @packageName	: orderhere.login
@@ -51,7 +51,7 @@ import orderhere.start.MainFrame;
 */
 public class Find extends JPanel implements ActionListener, FocusListener, KeyListener, ItemListener {
 
-	private MainFrame mainFrame = null;		//메인 프레임 객체
+	private StartFrame mainFrame = null;		//메인 프레임 객체
 	
 	private JButton btnBack;				//뒤로가기 버튼
 	private JTabbedPane tabPane;			//아이디/비밀번호 탭 팬
@@ -122,7 +122,7 @@ public class Find extends JPanel implements ActionListener, FocusListener, KeyLi
 		setLayout(new BorderLayout());
         setBackground(new Color(1, 168, 98));
         
-        mainFrame = (MainFrame) MainFrame.getMainFrame();	//메인 프레임 객체 주소 저장
+        mainFrame = (StartFrame) StartFrame.getMainFrame();	//메인 프레임 객체 주소 저장
         
         mainFrame.setTitle("Find");
         

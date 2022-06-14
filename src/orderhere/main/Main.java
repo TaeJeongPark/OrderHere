@@ -31,7 +31,7 @@ import orderhere.order.cart.Cart;
 import orderhere.order.cart.MenuInformation;
 import orderhere.order.orderdetails.OrderList;
 import orderhere.order.pointusage.PointUsage;
-import orderhere.start.MainFrame;
+import orderhere.start.StartFrame;
 
 /**
 * @packageName	: orderhere.main
@@ -48,7 +48,7 @@ import orderhere.start.MainFrame;
 */
 public class Main extends JPanel implements ActionListener, ItemListener {
 
-	private MainFrame mainFrame = null;		//메인 프레임 객체
+	private StartFrame mainFrame = null;		//메인 프레임 객체
 	
 	private String usersName;				//접속한 사용자 이름
 	private int usersCash;					//접속한 사용자 보유 캐시
@@ -94,7 +94,7 @@ public class Main extends JPanel implements ActionListener, ItemListener {
 		
 		setLayout(new BorderLayout());
 		
-        mainFrame = (MainFrame) MainFrame.getMainFrame();	//메인 프레임 객체 주소 저장
+        mainFrame = (StartFrame) StartFrame.getMainFrame();	//메인 프레임 객체 주소 저장
         
         mainFrame.setTitle("Main");
         

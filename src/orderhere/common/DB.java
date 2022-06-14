@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 import javax.swing.JOptionPane;
 
-import orderhere.start.MainFrame;
+import orderhere.start.StartFrame;
 
 /**
 * @packageName	: orderhere.common
@@ -94,7 +94,7 @@ public class DB {
 	
 	//오류 메시지 출력 Alert
 	private static void connFailAlert() {
-		JOptionPane.showMessageDialog((MainFrame) MainFrame.getMainFrame(), "서버 접속에 실패했습니다.\n다시 시도해주세요.", "접속 실패", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog((StartFrame) StartFrame.getMainFrame(), "서버 접속에 실패했습니다.\n다시 시도해주세요.", "접속 실패", JOptionPane.ERROR_MESSAGE);
 	}
 	
 }
