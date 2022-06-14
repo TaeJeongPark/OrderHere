@@ -28,6 +28,7 @@ import javax.swing.SpinnerNumberModel;
 import orderhere.common.DB;
 import orderhere.common.UsersData;
 import orderhere.order.CommonPanel;
+import orderhere.start.Start;
 
 public class MenuInformation extends JPanel implements ActionListener, MouseListener, ItemListener {
 
@@ -70,6 +71,8 @@ public class MenuInformation extends JPanel implements ActionListener, MouseList
 	
 	public MenuInformation(String menuname) 
 	{
+		Start.getMf().setTitle("MenuInformation");
+		
 		paraMenuName = menuname;
 		
 		getDataFromDB();

@@ -14,6 +14,7 @@ import javax.swing.JScrollPane;
 import orderhere.common.DB;
 import orderhere.common.UsersData;
 import orderhere.order.CommonPanel;
+import orderhere.start.Start;
 
 public class OrderDetails extends JPanel{
 	
@@ -45,6 +46,8 @@ public class OrderDetails extends JPanel{
 		
 		public OrderDetails(int iIsSameCart) 
 		{
+			Start.getMf().setTitle("OrderDetails");
+			
 			this.iIsSameCart = iIsSameCart;
 			
 			getDataFromDB();

@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import orderhere.common.DB;
 import orderhere.common.UsersData;
 import orderhere.order.CommonPanel;
+import orderhere.start.Start;
 
 public class PointUsage extends JPanel implements MouseListener{
 
@@ -44,6 +45,8 @@ public class PointUsage extends JPanel implements MouseListener{
 
 		public PointUsage() 
 		{
+			Start.getMf().setTitle("PointUsage");
+			
 			getDataFromDB();
 			
 			setSize(1050,750);
@@ -177,7 +180,7 @@ public class PointUsage extends JPanel implements MouseListener{
 
 		private void addListPanels() {
 			
-			if(iListnum==1) 
+			if(iListnum==0) 
 			{
 				JPanel pNoList = new JPanel();
 				pNoList.setLayout(null);
@@ -190,6 +193,8 @@ public class PointUsage extends JPanel implements MouseListener{
 				lblNothing.setLocation(20, 20);
 				lblNothing.setFont(new Font("맑은 고딕",Font.PLAIN,15));
 				pNoList.add(lblNothing);
+				
+				
 				
 				pList.add(pNoList);
 				return;

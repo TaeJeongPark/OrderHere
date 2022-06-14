@@ -26,6 +26,7 @@ import orderhere.common.UsersData;
 import orderhere.main.Main;
 import orderhere.order.CommonPanel;
 import orderhere.order.payment.Payment;
+import orderhere.start.Start;
 
 public class Cart extends JPanel implements ActionListener, EventTimePicker, ItemListener, MouseListener{
 	
@@ -81,9 +82,8 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 		
 		public Cart() 
 		{
-			System.out.println(usersid);
-			System.out.println(storeid);
-			System.out.println(UsersData.getiIsSameCart());
+			Start.getMf().setTitle("Cart");
+			
 			getDataFromDB();
 			
 			setSize(1050,750);

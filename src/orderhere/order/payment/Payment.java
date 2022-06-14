@@ -22,6 +22,7 @@ import orderhere.order.CommonPanel;
 import orderhere.order.cart.CartData;
 import orderhere.common.DB;
 import orderhere.order.orderdetails.OrderDetails;
+import orderhere.start.Start;
 
 public class Payment extends JPanel implements ActionListener, MouseListener{
 	
@@ -48,6 +49,7 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 		
 		public Payment(CartData cd) 
 		{
+			Start.getMf().setTitle("Payment");
 			this.cd = cd;
 
 			cartnum = cd.getCartnum();
