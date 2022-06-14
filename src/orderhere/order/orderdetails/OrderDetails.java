@@ -295,7 +295,7 @@ public class OrderDetails extends JPanel{
 						sarrMenuOptions[i] = rs.getString("cartstatus")+"/"+
 											rs.getString("cartpacking")+"/"+
 											rs.getString("cartsize")+"/"+
-											rs.getString("cartsyrup")+"/"+
+											rs.getString("cartsyrup")+" 시럽"+
 											"x"+rs.getInt("cartsyrupnum")+"/"+
 											rs.getString("cartwhippedcream");
 						System.out.println(sarrMenuOptions[i]);
