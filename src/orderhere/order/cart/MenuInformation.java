@@ -159,7 +159,7 @@ public class MenuInformation extends JPanel implements ActionListener, MouseList
 		lblMenuPrice.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		p_body.add(lblMenuPrice);
 		
-		JLabel lblMenuExplanation = new JLabel(sMenuExplanation);
+		JLabel lblMenuExplanation = new JLabel("<html>" + sMenuExplanation + "<html>");
 		lblMenuExplanation.setSize(396, 36);
 		lblMenuExplanation.setLocation(51, 36+400+6+15+5);
 		lblMenuExplanation.setFont(new Font("맑은 고딕", Font.PLAIN, 15));
