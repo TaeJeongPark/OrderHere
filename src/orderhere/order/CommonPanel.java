@@ -185,8 +185,19 @@ public class CommonPanel extends JFrame implements MouseListener{
 		}
 		if(carrTime[6]=='P') 
 		{
-			carrTime[0] = (char)((int)carrTime[0] + 1);
-			carrTime[1] = (char)((int)carrTime[1] + 2);
+			if(carrTime[1]!='8'&&carrTime[1]!='9')
+			{
+				carrTime[0] = (char)((int)carrTime[0] + 1);
+				carrTime[1] = (char)((int)carrTime[1] + 2);
+			}else if(carrTime[1]=='8') 
+			{
+				carrTime[0] = (char)((int)carrTime[0] + 2);
+				carrTime[1] = '0';
+			}else if(carrTime[1]=='9') 
+			{
+				carrTime[0] = (char)((int)carrTime[0] + 2);
+				carrTime[1] = '1';
+			}
 		}
 		char[] carrOtherFormatTime = {' ',' ',' ',':',' ',' ',' '};
 		
