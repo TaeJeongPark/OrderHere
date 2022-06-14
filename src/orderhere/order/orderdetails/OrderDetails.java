@@ -20,6 +20,7 @@ public class OrderDetails extends JPanel{
 		private String usersid = UsersData.getUsersId();
 		private int iIsSameCart;
 	
+		private int iOrderid;
 		private String sOrderDate;
 		private int iStoreId;
 		private String sStoreName;
@@ -82,7 +83,7 @@ public class OrderDetails extends JPanel{
 			
 			p_body.add(jsp);
 
-			JLabel lblOrderid = new JLabel("주문번호 : ");
+			JLabel lblOrderid = new JLabel("주문번호 : " + iOrderid);
 			lblOrderid.setSize(264,28);
 			lblOrderid.setLocation(42, 34);
 			lblOrderid.setFont(new Font("맑은 고딕",Font.BOLD,18));
@@ -246,6 +247,7 @@ public class OrderDetails extends JPanel{
 							if(i==0) 
 							{
 								iStoreId = rs.getInt("storeid");
+								iOrderid = rs.getInt("orderid");
 								sOrderDate = rs.getString("orderdate");
 								sOrderReservedTime = rs.getString("orderreservedtime");
 								iOrderUsagePoint = rs.getInt("orderusagepoint");
