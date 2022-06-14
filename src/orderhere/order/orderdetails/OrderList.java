@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import orderhere.common.DB;
 import orderhere.common.UsersData;
 import orderhere.order.CommonPanel;
+import orderhere.start.Start;
 
 public class OrderList extends JPanel implements MouseListener{
 		
@@ -42,6 +43,8 @@ public class OrderList extends JPanel implements MouseListener{
 		
 		public OrderList() 
 		{
+			Start.getMf().setTitle("OrderList");
+			
 			getDataFromDB();
 			
 			setSize(1050,750);
