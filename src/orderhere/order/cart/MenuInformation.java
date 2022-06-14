@@ -160,14 +160,15 @@ public class MenuInformation extends JPanel implements ActionListener, MouseList
 		p_body.add(lblMenuPrice);
 		
 		JLabel lblMenuExplanation = new JLabel("<html>" + sMenuExplanation + "<html>");
-		lblMenuExplanation.setSize(396, 36);
-		lblMenuExplanation.setLocation(51, 36+400+6+15+5);
+		lblMenuExplanation.setSize(396, 65);
+		lblMenuExplanation.setLocation(51, 36+400+6+15+5+3);
 		lblMenuExplanation.setFont(new Font("맑은 고딕", Font.PLAIN, 15));
+		lblMenuExplanation.setAlignmentY(JLabel.TOP_ALIGNMENT);
 		p_body.add(lblMenuExplanation);
 		
-		JLabel lblMenuAllergy = new JLabel(sMenuAllergy);
+		JLabel lblMenuAllergy = new JLabel("알레르기 유발 성분: "+ sMenuAllergy);
 		lblMenuAllergy.setSize(384, 16);
-		lblMenuAllergy.setLocation(51, 36+400+6+15+5+36+9);
+		lblMenuAllergy.setLocation(51, 36+400+6+15+5+36+9+30);
 		lblMenuAllergy.setFont(new Font("맑은 고딕", Font.PLAIN, 15));
 		p_body.add(lblMenuAllergy);
 	}

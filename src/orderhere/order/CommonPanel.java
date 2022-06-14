@@ -146,6 +146,31 @@ public class CommonPanel extends JFrame implements MouseListener{
 				arrcopy[i] = caOriginSum[i-1];
 			}
 			return String.valueOf(arrcopy);
+		}else if(iOriginSum>=1000000&&iOriginSum<10000000) {
+			char[] caOriginSum = sOriginSum.toCharArray();
+			char[] arrcopy = {' ',',',' ',' ',' ',',',' ',' ',' '};
+			arrcopy[0] = caOriginSum[0];
+			arrcopy[2] = caOriginSum[2];
+			arrcopy[3] = caOriginSum[3];
+			arrcopy[4] = caOriginSum[4];
+			for (int i = 6; i < 9; i++) {
+				arrcopy[i] = caOriginSum[i-2];
+			}
+			
+			return String.valueOf(arrcopy);
+		}
+		else if(iOriginSum>=10000000&&iOriginSum<100000000) {//9999만원까지
+			char[] caOriginSum = sOriginSum.toCharArray();
+			char[] arrcopy = {' ',' ',',',' ',' ',' ',',',' ',' ',' '};
+			arrcopy[0] = caOriginSum[0];
+			arrcopy[1] = caOriginSum[1];
+			arrcopy[3] = caOriginSum[3];
+			arrcopy[4] = caOriginSum[4];
+			arrcopy[5] = caOriginSum[5];
+			for (int i = 7; i < 10; i++) {
+				arrcopy[i] = caOriginSum[i-2];
+			}
+			return String.valueOf(arrcopy);
 		}
 		return str;
 	}
@@ -156,7 +181,7 @@ public class CommonPanel extends JFrame implements MouseListener{
 		char[] carrTime = time.toCharArray();
 		for(char c : carrTime) 
 		{
-			System.out.println(c);
+			System.out.print(c);
 		}
 		if(carrTime[6]=='P') 
 		{

@@ -181,7 +181,8 @@ public class Payment extends JPanel implements ActionListener, MouseListener{
 			p_body.add(btnApply);
 			
 			JLabel lblDUsersCash = new JLabel(CommonPanel.toAddCommaAtPrice(iUsersCash)+" 원");
-			lblDUsersCash.setSize(108, 21);
+			System.out.println(lblDUsersCash.getText());
+			lblDUsersCash.setSize(200, 21);
 			lblDUsersCash.setLocation(1080-260, 290+40+40);
 			lblDUsersCash.setFont(new Font("맑은 고딕",Font.BOLD,18));
 			p_body.add(lblDUsersCash);
