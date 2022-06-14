@@ -363,7 +363,7 @@ public class Cart extends JPanel implements ActionListener, EventTimePicker, Ite
 				if(cartnum !=0) {
 					if(btn_reserve.getIcon()==iconreservePressed) {
 						iIsReserved = 1;
-						tp.showPopup(this, 1050-220, 0);	
+						tp.showPopup(this, 1050-268, 0);	
 						lblReservedTime.setText(CommonPanel.transformTimeFormat( tp.getSelectedTime())+" 예약");
 						lblReservedTime.setForeground(Color.RED);
 						lblReservedTime.setLocation(41+608+19+108+25,118);
